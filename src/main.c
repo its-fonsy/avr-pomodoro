@@ -3,18 +3,21 @@
 #include <util/delay.h>
 
 #include "hal.h"
+#include "i2c.h"
 #include "button.h"
-
-#define LED_PIN   PB5
-#define LED_PORT  PORTB
-#define LED_DDR   DDRB
+#include "main.h"
 
 int main(void)
 {
 
-  /* Set LED as output */
+  /* Set onboard LED as output */
 
   set_pin(LED_DDR, LED_PIN);
+  reset_pin(LED_PORT, LED_PIN);
+
+  /* Init the 2-wire interface */
+
+  i2c_init(4, 4);
 
   /* Configure the button */
 
@@ -24,13 +27,13 @@ int main(void)
 
   sei();
 
+  uint8_t data[5] = { 0, 1, 2, 3, 4 };
+
 	while(1)
-	{
+    {
+      /* Send the data vector to test the driver */
 
-    if (is_button_pressed())
-      {
-        toggle_pin(LED_PORT, LED_PIN);
-      }
-
-	}
+      i2c_send(0x3c, data, 5);
+      _delay_ms(1000);
+    }
 }
