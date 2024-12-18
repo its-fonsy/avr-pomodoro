@@ -1,14 +1,14 @@
-#include <avr/io.h>
 #include <avr/interrupt.h>
+#include <avr/io.h>
 #include <util/delay.h>
 
+#include "button.h"
 #include "hal.h"
 #include "i2c.h"
-#include "button.h"
 #include "main.h"
+#include "ssd1306.h"
 
-int main(void)
-{
+int main(void) {
 
   /* Set onboard LED as output */
 
@@ -27,13 +27,16 @@ int main(void)
 
   sei();
 
-  uint8_t data[5] = { 0, 1, 2, 3, 4 };
+  ssd1306_init();
 
-	while(1)
-    {
-      /* Send the data vector to test the driver */
+  uint8_t data[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
-      i2c_send(0x3c, data, 5);
-      _delay_ms(1000);
-    }
+  while (1) {
+
+    /* Send the data vector to test the driver */
+
+    ssd1306_write_gddram(data, 5);
+
+    _delay_ms(100);
+  }
 }
