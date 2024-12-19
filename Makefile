@@ -1,44 +1,44 @@
 # MCU
-MCU   = atmega328p
-F_CPU = 16000000UL  
-BAUD  = 115200
-PORT  = /dev/ttyACM0
+MCU   := atmega328p
+F_CPU := 16000000UL  
+BAUD  := 115200
+PORT  := /dev/ttyACM0
 
-LIBDIR = /usr/avr/include
+LIBDIR := /usr/avr/include
 
 # Programmer
-PROGRAMMER_TYPE = arduino
-PROGRAMMER_ARGS = -P $(PORT) -b $(BAUD) 
+PROGRAMMER_TYPE := arduino
+PROGRAMMER_ARGS := -P $(PORT) -b $(BAUD) 
 
 # Programs
-CC = avr-gcc
-OBJCOPY = avr-objcopy
-OBJDUMP = avr-objdump
-AVRSIZE = avr-size
-AVRDUDE = avrdude
+CC 			:= avr-gcc
+OBJCOPY := avr-objcopy
+OBJDUMP := avr-objdump
+AVRSIZE := avr-size
+AVRDUDE := avrdude
 
 # Project folder
-TARGET = main
+TARGET := main
 # TARGET = $(lastword $(subst /, ,$(CURDIR)))
 
-SRC_DIR = src
-INC_DIR = inc
-OBJ_DIR = obj
+SRC_DIR := src
+INC_DIR := inc
+OBJ_DIR := obj
 
-SRCS = $(wildcard $(SRC_DIR)/*.c)
-INCS = $(wildcard $(INC_DIR)/*.h)
-OBJS = $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
+SRCS := $(wildcard $(SRC_DIR)/*.c)
+INCS := $(wildcard $(INC_DIR)/*.h)
+OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # C Flags
-CPPFLAGS = -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) -I$(INC_DIR) -I$(LIBDIR)
-CFLAGS  = -Os -g -std=gnu99 -Wall
-CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums 
-CFLAGS += -ffunction-sections -fdata-sections 
+CPPFLAGS	:= -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) -I$(INC_DIR) -I$(LIBDIR)
+CFLAGS  	:= -Os -g -std=gnu99 -Wall
+CFLAGS 		+= -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums 
+CFLAGS 		+= -ffunction-sections -fdata-sections 
 
 # LD Flags
-LDFLAGS  = -Wl,-Map,$(TARGET).map 
-LDFLAGS += -Wl,--gc-sections 
-TARGET_ARCH = -mmcu=$(MCU)
+LDFLAGS 		:= -Wl,-Map,$(TARGET).map 
+LDFLAGS 		+= -Wl,--gc-sections 
+TARGET_ARCH	:= -mmcu=$(MCU)
 
 # Generate Objects files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCS) Makefile
@@ -67,7 +67,7 @@ debug:
 	@echo "        BAUD:"  $(BAUD)
 	@echo	
 
-size:  $(TARGET).elf
+size: $(TARGET).elf
 	$(AVRSIZE) -C --mcu=$(MCU) $(TARGET).elf
 
 clean:

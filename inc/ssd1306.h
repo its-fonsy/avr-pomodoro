@@ -7,8 +7,8 @@
 #define DISPLAY_WIDTH 128
 
 #define SSD1306_I2C_ADDRESS 0x3C
-#define SSD1306_CO_BIT 0x80
-#define SSD1306_DC_BIT 0x40
+#define SSD1306_CTRL_BYTE_CMD 0x00
+#define SSD1306_CTRL_BYTE_DATA 0x40
 
 /* Fundamental Command */
 
@@ -17,8 +17,8 @@
 #define SSD1306_CMD_ENTIRE_DISPLAY_ON_IGNORE_RAM 0xA5
 #define SSD1306_CMD_SET_DISPLAY_NORMAL 0xA6
 #define SSD1306_CMD_SET_DISPLAY_INVERSE 0xA7
-#define SSD1306_CMD_SET_DISPLAY_ON 0xAE
-#define SSD1306_CMD_SET_DISPLAY_OFF 0xAF
+#define SSD1306_CMD_SET_DISPLAY_ON 0xAF
+#define SSD1306_CMD_SET_DISPLAY_OFF 0xAE
 
 /* Scrolling Command */
 
@@ -87,7 +87,7 @@
 #define SSD1306_COM_REMAPPED_MODE_SCAN 1
 #define SSD1306_COM_PIN_CFG_SEQUENTIAL 0x00
 #define SSD1306_COM_PIN_CFG_ALTERNATIVE 0x10
-#define SSD1306_COM_LEFT_RIGHT_REMAP_DISABLE 0x10
+#define SSD1306_COM_LEFT_RIGHT_REMAP_DISABLE 0x00
 #define SSD1306_COM_LEFT_RIGHT_REMAP_ENABLE 0x20
 
 /* Timing and Driving Scheme Setting Command */
@@ -114,42 +114,13 @@
 
 /* Low level device control functions */
 
-uint8_t ssd1306_write_gddram (uint8_t* data, uint8_t size);
-uint8_t ssd1306_cmd (uint8_t cmd);
-uint8_t ssd1306_cmd_and_data (uint8_t cmd, uint8_t *data, uint32_t data_size);
-uint8_t ssd1306_set_contrast (uint8_t contrast);
-uint8_t ssd1306_continuous_horizontal_scroll_setup (uint8_t direction,
-                                                    uint8_t start_page,
-                                                    uint8_t frame_interval,
-                                                    uint8_t end_page);
-uint8_t ssd1306_continuous_vertical_and_horizontal_scroll_setup (
-    uint8_t direction, uint8_t start_page, uint8_t frame_interval,
-    uint8_t end_page, uint8_t vertical_offset);
-uint8_t ssd1306_set_vertical_scroll_area (uint8_t row_fixed_area,
-                                          uint8_t row_scroll_area);
-uint8_t ssd1306_deactivate_scroll ();
-uint8_t ssd1306_activate_scroll ();
-uint8_t ssd1306_set_lower_col_start_addr (uint8_t addr);
-uint8_t ssd1306_set_higher_col_start_addr (uint8_t addr);
-uint8_t ssd1306_set_memory_addressing_mode (uint8_t mode);
-uint8_t ssd1306_set_col_address (uint8_t start, uint8_t end);
-uint8_t ssd1306_set_page_address (uint8_t start, uint8_t end);
-uint8_t ssd1306_set_page_start_address (uint8_t start);
-uint8_t ssd1306_set_display_start_line (uint8_t start);
-uint8_t ssd1306_set_segment_remap (uint8_t map);
-uint8_t ssd1306_set_multiplex_ratio (uint8_t ratio);
-uint8_t ssd1306_set_com_mode (uint8_t mode);
-uint8_t ssd1306_set_display_offset (uint8_t offset);
-uint8_t ssd1306_com_pin_hw_conf (uint8_t com_pin_conf,
-                                 uint8_t left_right_remap);
-uint8_t ssd1306_set_display_clock_and_osc (uint8_t ck, uint8_t osc);
-uint8_t ssd1306_set_precharge_period (uint8_t phase1, uint8_t phase2);
-uint8_t ssd1306_set_vcomh (uint8_t level);
-uint8_t ssd1306_set_charge_pump (uint8_t status);
-uint8_t ssd1306_nop ();
+uint8_t ssd1306_data (uint8_t *data, uint32_t size);
+uint8_t ssd1306_cmd (uint8_t *cmd, uint32_t size);
 
 /* High level functions */
 
 void ssd1306_init ();
+void ssd1306_clear_screen ();
+void ssd1306_goto (uint8_t col, uint8_t page);
 
 #endif /* __SSD1306_H */
