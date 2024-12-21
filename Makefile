@@ -41,8 +41,7 @@ LDFLAGS 		+= -Wl,--gc-sections
 TARGET_ARCH	:= -mmcu=$(MCU)
 
 # Generate Objects files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCS) Makefile
-	mkdir -p $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCS) Makefile $(OBJ_DIR)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c -o $@ $<
 
 # Generate ELF
@@ -52,6 +51,9 @@ $(TARGET).elf: $(OBJS)
 # Generate HEX
 $(TARGET).hex: $(TARGET).elf
 	 $(OBJCOPY) -j .text -j .data -O ihex $< $@
+
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
 ## These targets don't have files named after them
 .PHONY: all size clean flash font
