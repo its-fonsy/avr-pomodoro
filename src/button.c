@@ -6,7 +6,7 @@
 
 /* Private functions declarations */
 
-void timer_init();
+void timer0_init();
 
 /* Global variables */
 
@@ -15,26 +15,27 @@ uint8_t button_state = BTN_RELEASED;
 
 /* Private functions definitions */
 
-void timer_init()
+void timer0_init()
 {
 	/* Configure Timer 1:
-   *  - set prescaler to 1024;
+   *  - set prescaler to 64;
    *  - enable CTC mode;
    *  - trigger interrupt when timer reach OCR1A value.
    *
    * In this configuration (cpu @ 16MHz) the timer triggers an interrupt every
-   * 512us.
+   * 400us.
    *
    * The formula to get the interrupt interval is
    *  
    *  t = OCR * PRESCALER / F_CPU
-   *    = 8 * 1024 / 16e6 = 0.000512 s
+   *    = 100 * 64 / 16e6 = 0.0004 s
    *
    */
 
-	OCR1A = 8;
-	TIMSK1 = (1 << OCIE1A);                             
-	TCCR1B = (1 << WGM12) | (1 << CS12) | (1 << CS10);
+	OCR0A = 100;
+	TIMSK0 = (1 << OCIE0A);                             
+	TCCR0B = (1 << CS01) | (1 << CS00);
+	TCCR0A = (1 << WGM01);
 }
 
 void button_init()
@@ -46,7 +47,7 @@ void button_init()
 
   /* Initiate the timer */
 
-  timer_init();
+  timer0_init();
 }
 
 uint8_t is_button_pressed()
@@ -75,7 +76,7 @@ uint8_t is_button_pressed()
   return 0;
 }
 
-ISR(TIMER1_COMPA_vect)
+ISR(TIMER0_COMPA_vect)
 {
   uint8_t button_status;
   button_status = status_pin(BUTTON_INPUT_PORT, BUTTON_PIN);

@@ -31,7 +31,7 @@ OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # C Flags
 CPPFLAGS	:= -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) -I$(INC_DIR) -I$(LIBDIR)
-CFLAGS  	:= -Os -g -std=gnu99 -Wall
+CFLAGS  	:= -Os -g -std=gnu99 -Wal
 CFLAGS 		+= -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums 
 CFLAGS 		+= -ffunction-sections -fdata-sections 
 
