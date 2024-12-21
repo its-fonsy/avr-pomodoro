@@ -2,7 +2,6 @@
 #include <stdint.h>
 
 #include "hal.h"
-#include "main.h"
 #include "i2c.h"
 
 void i2c_init(uint8_t bit_rate, uint8_t prescaler)
