@@ -1,5 +1,6 @@
 #include "ssd1306.h"
 #include "font.h"
+#include <stdint.h>
 #include "ui.h"
 
 void ui_draw_minutes(uint8_t n)
@@ -73,3 +74,8 @@ void ui_draw_dots()
 
 }
 
+void ui_update_clock(uint8_t minutes, uint8_t seconds) {
+  ui_draw_minutes(minutes);
+  ui_draw_dots();
+  ui_draw_seconds(seconds);
+}
