@@ -108,3 +108,13 @@ ssd1306_clear_screen ()
       ssd1306_data(zeros, sizeof(zeros));
     }
 }
+
+void ssd1306_addressing_border(uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page)
+{
+  uint8_t cmd[] = {
+    SSD1306_CMD_SET_COL_ADDRESS, start_col, end_col,
+    SSD1306_CMD_SET_PAGE_ADDRESS, start_page, end_page 
+  };
+
+  ssd1306_cmd(cmd, sizeof(cmd));
+}

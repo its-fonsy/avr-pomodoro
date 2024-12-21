@@ -54,7 +54,7 @@ $(TARGET).hex: $(TARGET).elf
 	 $(OBJCOPY) -j .text -j .data -O ihex $< $@
 
 ## These targets don't have files named after them
-.PHONY: all size clean flash
+.PHONY: all size clean flash font
 
 all: $(TARGET).hex 
 
@@ -75,3 +75,7 @@ clean:
 
 flash: $(TARGET).hex
 	$(AVRDUDE) -c $(PROGRAMMER_TYPE) -p $(MCU) $(PROGRAMMER_ARGS) -U flash:w:$<
+
+font:
+	./gen_font.py font/sans-serif/piskel_0_to_9_20x32.c src/font.c
+	

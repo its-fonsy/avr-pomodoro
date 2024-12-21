@@ -1,7 +1,6 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdint.h>
-#include <string.h>
 #include <util/delay.h>
 
 #include "button.h"
@@ -9,6 +8,7 @@
 #include "i2c.h"
 #include "main.h"
 #include "ssd1306.h"
+#include "ui.h"
 
 int main(void) {
 
@@ -29,28 +29,36 @@ int main(void) {
 
   sei();
 
-  uint8_t data[] = {
-    0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0, 0xF0,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
-    0xFF, 0xFF, 0xFF, 0xFF, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
-    0x3F, 0x3F, 0x3F, 0x3F, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C, 0x3C,
-  };
-  uint8_t cmd2[] = { 0x21, 10, 25, 0x22, 0, 3 };
-
+  ssd1306_init();
   ssd1306_clear_screen();
 
-  // ssd1306_goto(0, 0);
-  ssd1306_cmd(cmd2, sizeof(cmd2));
-  ssd1306_data(data, sizeof(data));
+  uint8_t s = 10;
+  uint8_t m = 0;
 
+  ui_draw_dots();
 
   while (1) {
 
-    /* Send the data vector to test the driver */
+    ui_draw_minutes(m);
+    ui_draw_seconds(s);
 
-    toggle_pin(LED_PORT, LED_PIN);
+    s--;
 
-    _delay_ms(500);
+    if (s == 0xff)
+    {
+      s = 59;
+      m--;
+      if (m == 0xff){
+        set_pin(LED_PORT, LED_PIN);
+        while(!is_button_pressed())
+          ;
+        reset_pin(LED_PORT, LED_PIN);
+        m = 2;
+      }
+    }
+
+    _delay_ms(1000);
+
 
   }
 }
