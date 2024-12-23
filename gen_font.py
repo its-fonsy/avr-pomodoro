@@ -1,21 +1,15 @@
 #!/usr/bin/env python3
 
 import sys
+import argparse
 
-# Script that converts an image exported in C-format from
-#
-#   https://www.piskelapp.com
-#
-# to a data array that can be displayed on the OLED display ssd1306
-#
-# Usage: csto.py image.c
 
 def read_file(file_path):
     with open(file_path, "r") as file:
 
         start = False
-        font_bits = { 0 : [], 1 : [], 2 : [], 3 : [], 4 : [], 5 : [], 6 : [], 7 : [], 8 : [], 9 : [] }
-        i = 0
+        font_bits = []
+        char_bits = []
 
         for line in file:
             line = line.replace("0xff000000", "1").strip()
@@ -29,24 +23,28 @@ def read_file(file_path):
                 break
 
             if start:
-                tmp = []
+                line_bit = []
 
                 for n in line.replace(" ", "").split(","):
                     if n.isnumeric():
-                        tmp.append(int(n))
+                        line_bit.append(int(n))
 
-                # If array is empty
-                if not tmp:
-                    i += 1
-                    continue;
+                if not line_bit:
+                    font_bits.append(char_bits)
+                    char_bits = []
+                    continue
                 else:
-                    font_bits[i].append(tmp)
+                    char_bits.append(line_bit)
+
+    font_bits.append(char_bits)
 
     return font_bits
 
+
 def convert_bit_to_bytes(font_bits):
 
-    font_bytes = { 0 : [], 1 : [], 2 : [], 3 : [], 4 : [], 5 : [], 6 : [], 7 : [], 8 : [], 9 : [] }
+    font_bytes = []
+    char_bytes = []
 
     img_width = len(font_bits[0][0])
     img_height = len(font_bits[0])
@@ -55,39 +53,84 @@ def convert_bit_to_bytes(font_bits):
         sys.stderr.write("The image height is not a multiple of 8, abort.\n")
         exit(-1)
 
-    for font in font_bits:
+    for char in font_bits:
         for off in range(img_height // 8):
-            tmp = []
             for k in range(img_width):
                 n = 0
                 for i in range(8):
-                    bit_value = font_bit[font][i + off*8][k]
+                    bit_value = char[i + off*8][k]
                     n = n | (bit_value << i)
-                font_bytes[font].append(f"0x{n:02X}")
+                char_bytes.append(f"0x{n:02X}")
 
+        font_bytes.append(char_bytes)
+        char_bytes = []
 
     return font_bytes
 
-def generate_font_c_file(out_file_path, font_byte):
 
-    with open(out_file_path, "w") as file:
+def output(output_filepath, number_bytes, letter_bytes):
+
+    with open(output_filepath, "w") as file:
         file.write('#include "font.h"\n')
         file.write('\n')
-        file.write('const uint8_t font_24x32[][80] = {\n')
 
-        for i in range(10):
+        # Write number font
+        file.write('const uint8_t font_20x32[][80] = {\n')
+        last_element_index = len(number_bytes) - 1
+        for index, number in enumerate(number_bytes):
 
             byte_as_c_array = "{ "
-            byte_as_c_array += ", ".join(font_byte[i])
+            byte_as_c_array += ", ".join(number)
             byte_as_c_array += " }"
 
             file.write(byte_as_c_array)
-            file.write(',\n' if i != 9 else '\n')
+            file.write(',\n' if index != last_element_index else '\n')
+
+        file.write('};\n\n')
+
+        # Write letter font
+        file.write('const uint8_t font_8x16[][16] = {\n')
+        last_element_index = len(letter_bytes) - 1
+        for index, letter in enumerate(letter_bytes):
+
+            byte_as_c_array = "{ "
+            byte_as_c_array += ", ".join(letter)
+            byte_as_c_array += " }"
+
+            file.write(byte_as_c_array)
+            file.write(',\n' if index != last_element_index else '\n')
 
         file.write('};\n')
 
+
 if __name__ == "__main__":
 
-    font_bit = read_file(sys.argv[1])
-    font_byte = convert_bit_to_bytes(font_bit)
-    generate_font_c_file(sys.argv[2], font_byte)
+    parser = argparse.ArgumentParser(
+        prog="gen_font.py",
+        description="""
+Generate `font.c` from font designed with Piskel and exported as C file.
+Used to display numbers and letter on SSD1306 Oled display."""
+    )
+    parser.add_argument("-n", "--number-font",
+                        help="C file generated with Piskel with numbers",
+                        required=True)
+    parser.add_argument("-l", "--letter-font",
+                        help="C file generated with Piskel with letters",
+                        required=True)
+    parser.add_argument("-o", "--output",
+                        help="Output file with number and letter font",
+                        required=True)
+    args = parser.parse_args()
+    args = vars(args)
+
+    number_filepath = args["number_font"]
+    letter_filepath = args["letter_font"]
+    output_filepath = args["output"]
+
+    number_font_bit = read_file(number_filepath)
+    letter_font_bit = read_file(letter_filepath)
+
+    number_font_byte = convert_bit_to_bytes(number_font_bit)
+    letter_font_byte = convert_bit_to_bytes(letter_font_bit)
+
+    output(output_filepath, number_font_byte, letter_font_byte)

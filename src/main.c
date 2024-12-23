@@ -10,6 +10,7 @@
 #include "main.h"
 #include "ssd1306.h"
 #include "ui.h"
+#include "font.h"
 
 uint8_t s = 10;
 uint8_t m = 0;
@@ -42,40 +43,48 @@ int main(void) {
   ssd1306_init();
   ssd1306_clear_screen();
 
-  uint8_t fsm_state = WAIT_FOR_BUTTON;
-  uint8_t fsm_prev = PAUSE;
+  uint8_t i;
+
+  for(i = 0; i < 4; i++)
+  {
+    ssd1306_addressing_border(11*i, 11*i + 7, 0, 1);
+    ssd1306_data((uint8_t *) font_8x16[i], sizeof(font_8x16[i]));
+  }
+
+  // uint8_t fsm_state = WAIT_FOR_BUTTON;
+  // uint8_t fsm_prev = PAUSE;
 
   while (1) {
 
-    switch(fsm_state)
-    {
-      case WAIT_FOR_BUTTON:
-        ssd1306_clear_screen();
-        timer1_stop();
-        if (is_button_pressed())
-        {
-          fsm_state = (fsm_prev == WORK) ? PAUSE : WORK;
-          m = (fsm_prev == WORK) ? 0 : 0;
-          s = (fsm_prev == WORK) ? 5 : 10;
-          ui_update_clock(m, s);
-          timer1_start();
-        }
-        break;
-
-      case WORK:
-        ui_update_clock(m, s);
-        fsm_prev = WORK;
-        if (m >= 250)
-          fsm_state = WAIT_FOR_BUTTON;
-        break;
-
-      case PAUSE:
-        ui_update_clock(m, s);
-        fsm_prev = PAUSE;
-        if (m >= 250)
-          fsm_state = WAIT_FOR_BUTTON;
-        break;
-    }
+    // switch(fsm_state)
+    // {
+    //   case WAIT_FOR_BUTTON:
+    //     ssd1306_clear_screen();
+    //     timer1_stop();
+    //     if (is_button_pressed())
+    //     {
+    //       fsm_state = (fsm_prev == WORK) ? PAUSE : WORK;
+    //       m = (fsm_prev == WORK) ? 0 : 0;
+    //       s = (fsm_prev == WORK) ? 5 : 10;
+    //       ui_update_clock(m, s);
+    //       timer1_start();
+    //     }
+    //     break;
+    //
+    //   case WORK:
+    //     ui_update_clock(m, s);
+    //     fsm_prev = WORK;
+    //     if (m >= 250)
+    //       fsm_state = WAIT_FOR_BUTTON;
+    //     break;
+    //
+    //   case PAUSE:
+    //     ui_update_clock(m, s);
+    //     fsm_prev = PAUSE;
+    //     if (m >= 250)
+    //       fsm_state = WAIT_FOR_BUTTON;
+    //     break;
+    // }
 
   }
 }

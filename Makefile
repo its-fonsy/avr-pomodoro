@@ -31,7 +31,7 @@ OBJS := $(SRCS:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 # C Flags
 CPPFLAGS	:= -DF_CPU=$(F_CPU) -DBAUD=$(BAUD) -I$(INC_DIR) -I$(LIBDIR)
-CFLAGS  	:= -Os -g -std=gnu99 -Wal
+CFLAGS  	:= -Os -g -std=gnu99 -Wall
 CFLAGS 		+= -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums 
 CFLAGS 		+= -ffunction-sections -fdata-sections 
 
@@ -39,6 +39,11 @@ CFLAGS 		+= -ffunction-sections -fdata-sections
 LDFLAGS 		:= -Wl,-Map,$(TARGET).map 
 LDFLAGS 		+= -Wl,--gc-sections 
 TARGET_ARCH	:= -mmcu=$(MCU)
+
+# Font source files
+NUMBER_FONT_SRC 				:= font/sans-serif/numbers_20x32.c
+LETTER_FONT_SRC 				:= font/sans-serif/letters_8x16.c
+GENERATION_FONT_SCRIPT	:= ./gen_font.py
 
 # Generate Objects files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(INCS) Makefile $(OBJ_DIR)
@@ -79,5 +84,4 @@ flash: $(TARGET).hex
 	$(AVRDUDE) -c $(PROGRAMMER_TYPE) -p $(MCU) $(PROGRAMMER_ARGS) -U flash:w:$<
 
 font:
-	./gen_font.py font/sans-serif/piskel_0_to_9_20x32.c src/font.c
-	
+	$(GENERATION_FONT_SCRIPT) -n $(NUMBER_FONT_SRC) -l $(LETTER_FONT_SRC) -o src/font.c

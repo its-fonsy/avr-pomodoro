@@ -14,15 +14,15 @@ void ui_draw_minutes(uint8_t n)
   /* Draw tens digit */
 
   ssd1306_addressing_border(FONT_MINUTES_X,
-                            FONT_MINUTES_X + FONT_WIDTH - 1,
+                            FONT_MINUTES_X + FONT_24x32_WIDTH - 1,
                             0,
                             3);
   ssd1306_data((uint8_t *) font_24x32[tens], sizeof(font_24x32[tens]));
 
   /* Draw unit digit */
 
-  ssd1306_addressing_border(FONT_MINUTES_X + FONT_WIDTH + FONT_OFFSET,
-                            FONT_MINUTES_X + FONT_OFFSET + 2*FONT_WIDTH - 1,
+  ssd1306_addressing_border(FONT_MINUTES_X + FONT_24x32_WIDTH + FONT_OFFSET,
+                            FONT_MINUTES_X + FONT_OFFSET + 2*FONT_24x32_WIDTH - 1,
                             0,
                             3);
   ssd1306_data((uint8_t *) font_24x32[unit], sizeof(font_24x32[unit]));
@@ -39,15 +39,15 @@ void ui_draw_seconds(uint8_t n)
   /* Draw tens digit */
 
   ssd1306_addressing_border(FONT_SECONDS_X,
-                            FONT_SECONDS_X + FONT_WIDTH - 1,
+                            FONT_SECONDS_X + FONT_24x32_WIDTH - 1,
                             0,
                             3);
   ssd1306_data((uint8_t *) font_24x32[tens], sizeof(font_24x32[tens]));
 
   /* Draw unit digit */
 
-  ssd1306_addressing_border(FONT_SECONDS_X + FONT_WIDTH + FONT_OFFSET,
-                            FONT_SECONDS_X + FONT_WIDTH + FONT_OFFSET + FONT_WIDTH - 1,
+  ssd1306_addressing_border(FONT_SECONDS_X + FONT_24x32_WIDTH + FONT_OFFSET,
+                            FONT_SECONDS_X + FONT_24x32_WIDTH + FONT_OFFSET + FONT_24x32_WIDTH - 1,
                             0,
                             3);
   ssd1306_data((uint8_t *) font_24x32[unit], sizeof(font_24x32[unit]));
