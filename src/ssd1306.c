@@ -1,9 +1,10 @@
+#include "ssd1306.h"
+
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "i2c.h"
-#include "ssd1306.h"
 
 void
 ssd1306_init ()
@@ -105,16 +106,30 @@ ssd1306_clear_screen ()
   for (i = 0; i < DISPLAY_HEIGHT / 8; i++)
     {
       ssd1306_goto (0, i);
-      ssd1306_data(zeros, sizeof(zeros));
+      ssd1306_data (zeros, sizeof (zeros));
     }
 }
 
-void ssd1306_addressing_border(uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page)
+void
+ssd1306_set_column_and_page_address (uint8_t start_col, uint8_t end_col,
+                                     uint8_t start_page, uint8_t end_page)
 {
-  uint8_t cmd[] = {
-    SSD1306_CMD_SET_COL_ADDRESS, start_col, end_col,
-    SSD1306_CMD_SET_PAGE_ADDRESS, start_page, end_page 
-  };
+  uint8_t cmd[] = { SSD1306_CMD_SET_COL_ADDRESS,  start_col,  end_col,
+                    SSD1306_CMD_SET_PAGE_ADDRESS, start_page, end_page };
 
-  ssd1306_cmd(cmd, sizeof(cmd));
+  ssd1306_cmd (cmd, sizeof (cmd));
+}
+
+void
+ssd1306_set_column_address (uint8_t start, uint8_t end)
+{
+  uint8_t cmd[] = { SSD1306_CMD_SET_COL_ADDRESS, start, end };
+  ssd1306_cmd (cmd, sizeof (cmd));
+}
+
+void
+ssd1306_set_page_address (uint8_t start, uint8_t end)
+{
+  uint8_t cmd[] = { SSD1306_CMD_SET_PAGE_ADDRESS, start, end };
+  ssd1306_cmd (cmd, sizeof (cmd));
 }

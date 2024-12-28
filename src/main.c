@@ -1,116 +1,155 @@
+#include "main.h"
+
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <stdint.h>
 #include <util/delay.h>
 
-#include "main.h"
 #include "button.h"
-#include "hal.h"
 #include "i2c.h"
 #include "main.h"
 #include "ssd1306.h"
 #include "ui.h"
-#include "font.h"
 
 uint8_t s = 10;
 uint8_t m = 0;
+uint8_t frame = 0;
 
-int main(void) {
+int
+main (void)
+{
+  /* Initialize the 2-wire, button, Timer 1 interface */
 
-  /* Set onboard LED as output */
-
-  set_pin(LED_DDR, LED_PIN);
-  reset_pin(LED_PORT, LED_PIN);
-
-  /* Init the 2-wire interface */
-
-  i2c_init(4, 4);
-
-  /* Configure the button */
-
-  button_init();
-
-  /* Timer 1 init */
-
-  timer1_init();
+  i2c_init (4, 4);
+  button_init ();
+  timer1_init ();
 
   /* Activate the interrupts */
 
-  sei();
+  sei ();
 
   /* Initialize the display */
 
-  ssd1306_init();
-  ssd1306_clear_screen();
+  ssd1306_init ();
 
-  uint8_t i;
+  /* Drawing welcome screen and wait for the user to press the button */
 
-  for(i = 0; i < 4; i++)
-  {
-    ssd1306_addressing_border(11*i, 11*i + 7, 0, 1);
-    ssd1306_data((uint8_t *) font_8x16[i], sizeof(font_8x16[i]));
-  }
+  timer1_start ();
+  while (1)
+    {
+      ui_draw_welcome ();
+      if (is_button_pressed ())
+        break;
+    }
 
-  // uint8_t fsm_state = WAIT_FOR_BUTTON;
-  // uint8_t fsm_prev = PAUSE;
+  /* Prepare the variable for WORK timer */
 
-  while (1) {
+  uint8_t fsm_state = MAIN_FSM_TIMER;
+  uint8_t prev_timer_type = TIMER_WORK;
+  m = WORK_MINUTES;
+  s = WORK_SECONDS;
 
-    // switch(fsm_state)
-    // {
-    //   case WAIT_FOR_BUTTON:
-    //     ssd1306_clear_screen();
-    //     timer1_stop();
-    //     if (is_button_pressed())
-    //     {
-    //       fsm_state = (fsm_prev == WORK) ? PAUSE : WORK;
-    //       m = (fsm_prev == WORK) ? 0 : 0;
-    //       s = (fsm_prev == WORK) ? 5 : 10;
-    //       ui_update_clock(m, s);
-    //       timer1_start();
-    //     }
-    //     break;
-    //
-    //   case WORK:
-    //     ui_update_clock(m, s);
-    //     fsm_prev = WORK;
-    //     if (m >= 250)
-    //       fsm_state = WAIT_FOR_BUTTON;
-    //     break;
-    //
-    //   case PAUSE:
-    //     ui_update_clock(m, s);
-    //     fsm_prev = PAUSE;
-    //     if (m >= 250)
-    //       fsm_state = WAIT_FOR_BUTTON;
-    //     break;
-    // }
+  /* Reset and start the timer */
 
-  }
+  timer1_stop_and_reset ();
+  timer1_start ();
+
+  /* Main loop */
+
+  while (1)
+    {
+      switch (fsm_state)
+        {
+        case MAIN_FSM_WAIT_FOR_BUTTON:
+
+          ui_draw_wait_for_button (prev_timer_type);
+
+          /* When the user press the button start the WORK/PAUSE timer */
+
+          if (is_button_pressed ())
+            {
+              timer1_stop_and_reset ();
+              fsm_state = MAIN_FSM_TIMER;
+
+              switch (prev_timer_type)
+                {
+                case TIMER_WORK:
+                  m = PAUSE_MINUTES;
+                  s = PAUSE_SECONDS;
+                  prev_timer_type = TIMER_PAUSE;
+                  break;
+                case TIMER_PAUSE:
+                  m = WORK_MINUTES;
+                  s = WORK_SECONDS;
+                  prev_timer_type = TIMER_WORK;
+                  break;
+                }
+
+              ui_draw_timer (m, s);
+              timer1_start ();
+            }
+
+          break;
+
+        case MAIN_FSM_TIMER:
+
+          ui_draw_timer (m, s);
+
+          /* When timer has finished change state */
+
+          if (m >= 0xFA)
+            {
+              timer1_stop_and_reset ();
+              fsm_state = MAIN_FSM_WAIT_FOR_BUTTON;
+              ui_draw_wait_for_button (prev_timer_type);
+              timer1_start ();
+            }
+
+          break;
+        }
+    }
 }
 
-void timer1_init()
+void
+timer1_init ()
 {
-	OCR1A = 15625;
-	TIMSK1 = (1 << OCIE1A);                             
+  OCR1A = 15625;
+  TIMSK1 = (1 << OCIE1A);
 }
 
-void timer1_start()
+void
+timer1_start ()
 {
+  /* Set prescaler CTC mode and prescaler to 64.
+   * When the prescaler is set, the timer start counting. */
+
   TCCR1B = (1 << WGM12) | (1 << CS12) | (1 << CS10);
 }
 
-void timer1_stop()
+void
+timer1_stop_and_reset ()
 {
+  /* Set timer prescaler to 0 to stop the timer */
+
   TCCR1B = 0x00;
+
+  /* Zero the timer counter */
+
+  TCNT1 = 0x00;
+
+  /* Reset the frame counter */
+
+  frame = 0;
 }
 
-ISR(TIMER1_COMPA_vect)
+ISR (TIMER1_COMPA_vect)
 {
   s--;
   if (s > 250)
-  {
-    s = 59;
-    m--;
-  }
+    {
+      s = 59;
+      m--;
+    }
+
+  frame++;
 }

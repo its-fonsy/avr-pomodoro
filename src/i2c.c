@@ -1,35 +1,38 @@
-#include <util/twi.h>
-#include <stdint.h>
-
-#include "hal.h"
 #include "i2c.h"
 
-void i2c_init(uint8_t bit_rate, uint8_t prescaler)
+#include <stdint.h>
+#include <util/twi.h>
+
+#include "hal.h"
+
+void
+i2c_init (uint8_t bit_rate, uint8_t prescaler)
 {
-  switch(prescaler)
-  {
+  switch (prescaler)
+    {
     case 1:
-      reset_pin(TWSR, TWPS0);
-      reset_pin(TWSR, TWPS1);
+      reset_pin (TWSR, TWPS0);
+      reset_pin (TWSR, TWPS1);
       break;
     case 4:
-      set_pin(TWSR, TWPS0);
-      reset_pin(TWSR, TWPS1);
+      set_pin (TWSR, TWPS0);
+      reset_pin (TWSR, TWPS1);
       break;
     case 16:
-      reset_pin(TWSR, TWPS0);
-      set_pin(TWSR, TWPS1);
+      reset_pin (TWSR, TWPS0);
+      set_pin (TWSR, TWPS1);
       break;
     case 64:
-      set_pin(TWSR, TWPS0);
-      set_pin(TWSR, TWPS1);
+      set_pin (TWSR, TWPS0);
+      set_pin (TWSR, TWPS1);
       break;
-  }
+    }
 
   TWBR = bit_rate;
 }
 
-uint8_t i2c_send(uint8_t address, uint8_t *data, uint32_t size)
+uint8_t
+i2c_send (uint8_t address, uint8_t *data, uint32_t size)
 {
   uint8_t i;
 
@@ -40,7 +43,7 @@ uint8_t i2c_send(uint8_t address, uint8_t *data, uint32_t size)
   /* Wait for START being sent */
 
   while (!(TWCR & (1 << TWINT)))
-      ;
+    ;
 
   /* Check that START is being sent correctly */
 
@@ -55,7 +58,7 @@ uint8_t i2c_send(uint8_t address, uint8_t *data, uint32_t size)
   /* Wait for ADDRESS being sent */
 
   while (!(TWCR & (1 << TWINT)))
-      ;
+    ;
 
   /* Check acknowledge of SLAVE */
 
@@ -64,31 +67,30 @@ uint8_t i2c_send(uint8_t address, uint8_t *data, uint32_t size)
 
   /* Send data */
 
-  for(i = 0; i < size; i++)
-  {
-    /* Write data to the TWDR register */
+  for (i = 0; i < size; i++)
+    {
+      /* Write data to the TWDR register */
 
-    TWDR = data[i];
+      TWDR = data[i];
 
-    /* Send data */
+      /* Send data */
 
-    TWCR = (1 << TWINT) | (1 << TWEN);
+      TWCR = (1 << TWINT) | (1 << TWEN);
 
-    /* Wait for data[i] being sent */
+      /* Wait for data[i] being sent */
 
-    while (!(TWCR & (1 << TWINT)))
-      ;
+      while (!(TWCR & (1 << TWINT)))
+        ;
 
-    /* Check data being correctly received */
+      /* Check data being correctly received */
 
-    if ((TWSR & 0xF8) != TW_MT_DATA_ACK)
-      return -3;
-  }
+      if ((TWSR & 0xF8) != TW_MT_DATA_ACK)
+        return -3;
+    }
 
   /* Send STOP */
 
-  TWCR = (1<<TWINT) | (1<<TWEN) | (1<<TWSTO);
+  TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
 
   return 0;
 }
-

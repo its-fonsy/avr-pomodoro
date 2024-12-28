@@ -122,6 +122,10 @@ uint8_t ssd1306_cmd (uint8_t *cmd, uint32_t size);
 void ssd1306_init ();
 void ssd1306_clear_screen ();
 void ssd1306_goto (uint8_t col, uint8_t page);
-void ssd1306_addressing_border(uint8_t start_col, uint8_t end_col, uint8_t start_page, uint8_t end_page);
+void ssd1306_set_column_and_page_address (uint8_t start_col, uint8_t end_col,
+                                          uint8_t start_page,
+                                          uint8_t end_page);
+void ssd1306_set_column_address (uint8_t start, uint8_t end);
+void ssd1306_set_page_address (uint8_t start, uint8_t end);
 
 #endif /* __SSD1306_H */
