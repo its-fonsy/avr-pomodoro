@@ -41,7 +41,7 @@ LDFLAGS 		+= -Wl,--gc-sections
 TARGET_ARCH	:= -mmcu=$(MCU)
 
 # Font source files
-NUMBER_FONT_SRC 				:= font/sans-serif/numbers_20x32.c
+NUMBER_FONT_SRC 				:= font/7-segment/number_20x32.c
 LETTER_FONT_SRC 				:= font/sans-serif/letters_8x16.c
 GENERATION_FONT_SCRIPT	:= ./gen_font.py
 

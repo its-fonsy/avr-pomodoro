@@ -110,10 +110,21 @@ main (void)
     }
 }
 
+/* Timer 1 configuration:
+ *  - prescaler set to 256;
+ *  - CTC mode;
+ *  - trigger interrupt when timer reach OCR1A value.
+ *
+ * In this configuration (cpu @ 16MHz) the timer triggers an interrupt every
+ * 16us.
+ *
+ * With OCR1A set to 62500 the timer ticks every 1s.
+ */
+
 void
 timer1_init ()
 {
-  OCR1A = 15625;
+  OCR1A = 62500;
   TIMSK1 = (1 << OCIE1A);
 }
 
@@ -123,7 +134,7 @@ timer1_start ()
   /* Set prescaler CTC mode and prescaler to 64.
    * When the prescaler is set, the timer start counting. */
 
-  TCCR1B = (1 << WGM12) | (1 << CS12) | (1 << CS10);
+  TCCR1B = (1 << WGM12) | (1 << CS12);
 }
 
 void

@@ -19,10 +19,10 @@ uint8_t button_state = BTN_RELEASED;
 void
 timer0_init ()
 {
-  /* Configure Timer 1:
-   *  - set prescaler to 64;
-   *  - enable CTC mode;
-   *  - trigger interrupt when timer reach OCR1A value.
+  /* Timer 0 configuration:
+   *  - prescaler set to 64;
+   *  - CTC mode;
+   *  - trigger interrupt when timer reach OCR0A value.
    *
    * In this configuration (cpu @ 16MHz) the timer triggers an interrupt every
    * 400us.
