@@ -11,11 +11,12 @@ PROGRAMMER_TYPE := arduino
 PROGRAMMER_ARGS := -P $(PORT) -b $(BAUD) 
 
 # Programs
-CC		:= avr-gcc
-OBJCOPY := avr-objcopy
-OBJDUMP := avr-objdump
-AVRSIZE := avr-size
-AVRDUDE := avrdude
+CC			:= avr-gcc
+OBJCOPY 	:= avr-objcopy
+OBJDUMP 	:= avr-objdump
+AVRSIZE 	:= avr-size
+AVRDUDE 	:= avrdude
+FORMATTER	:= clang-format
 
 TARGET		:= pomo
 
@@ -43,7 +44,7 @@ NUMBER_FONT_SRC			:= scripts/font/7-segment/number_20x32.c
 LETTER_FONT_SRC			:= scripts/font/sans-serif/letters_8x16.c
 GENERATION_FONT_SCRIPT	:= scripts/font/gen_font.py
 
-.PHONY: all size clean flash font debug
+.PHONY: all size clean flash font debug format
 
 all: $(BUILD_DIR)/$(TARGET).hex 
 
@@ -86,3 +87,6 @@ flash: $(BUILD_DIR)/$(TARGET).hex
 	$(AVRDUDE) -c $(PROGRAMMER_TYPE) -p $(MCU) $(PROGRAMMER_ARGS) -U flash:w:$<
 
 font: $(SRC_DIR)/font.c
+
+format: font
+	$(FORMATTER) -i $(SRCS)
