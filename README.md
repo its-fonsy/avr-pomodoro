@@ -18,11 +18,17 @@ compile it
 
     git clone git@github.com:its-fonsy/avr-pomodoro.git
     cd avr-pomodoro
-    make all
 
-then you can flash the microcontroller
+then to compile the code
+
+    mkdir build
+    cd build
+    cmake ..
+    make
+
+finally you can flash the microcontroller
 
     make flash
 
-The flashing configuration is inside the `Makefile`. If you use a different
-programmer (or something else) change the `Makefile` accordingly to your setup.
+The flashing configuration is inside the `CMakeLists.txt`. If you use a
+different programmer (or something else) change it accordingly to your setup.
