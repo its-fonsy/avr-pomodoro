@@ -3,19 +3,25 @@
 
 #include <stdint.h>
 
-#define BUTTON_PIN PB0
-#define BUTTON_PORT PORTB
-#define BUTTON_INPUT_PORT PINB
-#define BUTTON_DDR DDRB
+enum {
+    BUTTON_IDLE,
+    BUTTON_PRESSED,
+    BUTTON_PRESS_ACK
+};
 
-typedef enum ButtonState {
-    BTN_RELEASED,
-    BTN_PRESSED,
-} ButtonState;
+enum {
+    BUTTON_LOCKED,
+    BUTTON_UNLOCKED
+};
 
-/* Public functions */
+typedef struct {
+    uint8_t (*read_pin)(void);
+    uint8_t history;
+    uint8_t status;
+    uint8_t lock;
+} button_t;
 
-uint8_t is_button_pressed(void);
-void button_init(void);
+void button_init(button_t* button);
+void button_update(button_t* button);
 
-#endif /* __BUTTON_H */
+#endif // __BUTTON_H

@@ -1,15 +1,17 @@
 #ifndef __MAIN_H
 #define __MAIN_H
 
+#include "button.h"
 #include <stdint.h>
+
 #define LED_PIN PB5
 #define LED_PORT PORTB
 #define LED_DDR DDRB
 
-#define WORK_MINUTES 25
-#define WORK_SECONDS 0
-#define PAUSE_MINUTES 5
-#define PAUSE_SECONDS 0
+#define WORK_MINUTES 0
+#define WORK_SECONDS 5
+#define PAUSE_MINUTES 0
+#define PAUSE_SECONDS 2
 
 /* Main FSM states */
 
@@ -26,9 +28,7 @@ enum {
 };
 
 extern uint8_t frame;
-
-void timer1_init(void);
-void timer1_start(void);
-void timer1_stop_and_reset(void);
+extern uint8_t s;
+extern uint8_t m;
 
 #endif /* __MAIN_H */
