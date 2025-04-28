@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
 
-
 # Variables regarding the AVR chip
 set(MCU   atmega328p)
 set(F_CPU 16000000UL)
@@ -23,6 +22,8 @@ set(CMAKE_SYSTEM_NAME  Generic)
 set(CMAKE_CXX_COMPILER ${AVRCPP})
 set(CMAKE_C_COMPILER   ${AVRC})
 set(CMAKE_ASM_COMPILER ${AVRC})
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 project(pomo C CXX ASM)
 
