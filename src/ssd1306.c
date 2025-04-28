@@ -6,7 +6,7 @@
 
 #include "i2c.h"
 
-void ssd1306_init()
+void ssd1306_init(void)
 {
     uint8_t cmd[] = { SSD1306_CMD_SET_DISPLAY_OFF,
         SSD1306_CMD_SET_MEM_ADDRESSING_MODE,
@@ -43,8 +43,7 @@ void ssd1306_init()
     return;
 }
 
-uint8_t
-ssd1306_cmd(uint8_t* cmd, uint32_t size)
+uint8_t ssd1306_cmd(uint8_t* cmd, uint32_t size)
 {
     uint8_t addr;
     uint8_t ret;
@@ -64,8 +63,7 @@ ssd1306_cmd(uint8_t* cmd, uint32_t size)
     return ret;
 }
 
-uint8_t
-ssd1306_data(uint8_t* data, uint32_t size)
+uint8_t ssd1306_data(uint8_t* data, uint32_t size)
 {
     uint8_t addr;
     uint8_t ret;
@@ -93,7 +91,7 @@ void ssd1306_goto(uint8_t col, uint8_t page)
     ssd1306_cmd(cmd, sizeof(cmd));
 }
 
-void ssd1306_clear_screen()
+void ssd1306_clear_screen(void)
 {
     uint8_t i;
     uint8_t zeros[DISPLAY_WIDTH];

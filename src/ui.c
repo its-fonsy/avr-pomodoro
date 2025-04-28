@@ -66,7 +66,7 @@ void ui_draw_seconds(uint8_t seconds)
     ssd1306_data((uint8_t*)font_20x32[unit], sizeof(font_20x32[unit]));
 }
 
-void ui_draw_dots()
+void ui_draw_dots(void)
 {
     uint8_t dot[] = { 0xE0, 0xE0, 0xE0, 0xE0, 0xE0,
         0x03, 0x03, 0x03, 0x03, 0x03 };
@@ -191,7 +191,7 @@ wait_for_button_fsm:
     }
 }
 
-void ui_draw_welcome()
+void ui_draw_welcome(void)
 {
     if (disp.drawn != UI_WELCOME) {
         disp.drawn = UI_WELCOME;

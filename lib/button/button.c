@@ -7,7 +7,7 @@
 
 /* Private functions declarations */
 
-void timer0_init();
+void timer0_init(void);
 
 /* Global variables */
 
@@ -16,7 +16,7 @@ uint8_t button_state = BTN_RELEASED;
 
 /* Private functions definitions */
 
-void timer0_init()
+void timer0_init(void)
 {
     /* Timer 0 configuration:
      *  - prescaler set to 64;
@@ -39,7 +39,7 @@ void timer0_init()
     TCCR0A = (1 << WGM01);
 }
 
-void button_init()
+void button_init(void)
 {
     /* Set BUTTON as input using pull-up resistor */
 
@@ -51,8 +51,7 @@ void button_init()
     timer0_init();
 }
 
-uint8_t
-is_button_pressed()
+uint8_t is_button_pressed(void)
 {
     switch (button_state) {
     case BTN_RELEASED:

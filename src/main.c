@@ -114,13 +114,13 @@ int main(void)
  * With OCR1A set to 62500 the timer ticks every 1s.
  */
 
-void timer1_init()
+void timer1_init(void)
 {
     OCR1A = 62500;
     TIMSK1 = (1 << OCIE1A);
 }
 
-void timer1_start()
+void timer1_start(void)
 {
     /* Set prescaler CTC mode and prescaler to 64.
      * When the prescaler is set, the timer start counting. */
@@ -128,7 +128,7 @@ void timer1_start()
     TCCR1B = (1 << WGM12) | (1 << CS12);
 }
 
-void timer1_stop_and_reset()
+void timer1_stop_and_reset(void)
 {
     /* Set timer prescaler to 0 to stop the timer */
 

@@ -13,24 +13,22 @@
 
 /* Main FSM states */
 
-enum
-{
-  MAIN_FSM_WAIT_FOR_BUTTON = 40,
-  MAIN_FSM_TIMER,
+enum {
+    MAIN_FSM_WAIT_FOR_BUTTON = 40,
+    MAIN_FSM_TIMER,
 };
 
 /* Timer types */
 
-enum
-{
-  TIMER_WORK = 30,
-  TIMER_PAUSE,
+enum {
+    TIMER_WORK = 30,
+    TIMER_PAUSE,
 };
 
 extern uint8_t frame;
 
-void timer1_init ();
-void timer1_start ();
-void timer1_stop_and_reset ();
+void timer1_init(void);
+void timer1_start(void);
+void timer1_stop_and_reset(void);
 
 #endif /* __MAIN_H */

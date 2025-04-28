@@ -8,15 +8,14 @@
 #define BUTTON_INPUT_PORT PINB
 #define BUTTON_DDR DDRB
 
-typedef enum ButtonState
-{
-  BTN_RELEASED,
-  BTN_PRESSED,
+typedef enum ButtonState {
+    BTN_RELEASED,
+    BTN_PRESSED,
 } ButtonState;
 
 /* Public functions */
 
-uint8_t is_button_pressed ();
-void button_init ();
+uint8_t is_button_pressed(void);
+void button_init(void);
 
 #endif /* __BUTTON_H */
