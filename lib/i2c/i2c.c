@@ -1,28 +1,26 @@
 #include "i2c.h"
 
+#include <avr/io.h>
+#include <avr/sfr_defs.h>
 #include <stdint.h>
 #include <util/twi.h>
-
-#include "hal.h"
 
 void i2c_init(uint8_t bit_rate, uint8_t prescaler)
 {
     switch (prescaler) {
     case 1:
-        reset_pin(TWSR, TWPS0);
-        reset_pin(TWSR, TWPS1);
+        TWSR &= ~(_BV(TWPS0) | _BV(TWPS1));
         break;
     case 4:
-        set_pin(TWSR, TWPS0);
-        reset_pin(TWSR, TWPS1);
+        TWSR |= _BV(TWPS0);
+        TWSR &= ~(_BV(TWPS1));
         break;
     case 16:
-        reset_pin(TWSR, TWPS0);
-        set_pin(TWSR, TWPS1);
+        TWSR &= ~(_BV(TWPS0));
+        TWSR |= _BV(TWPS1);
         break;
     case 64:
-        set_pin(TWSR, TWPS0);
-        set_pin(TWSR, TWPS1);
+        TWSR |= _BV(TWPS0) | _BV(TWPS1);
         break;
     }
 
@@ -36,12 +34,11 @@ i2c_send(uint8_t address, uint8_t* data, uint32_t size)
 
     /* Send START */
 
-    TWCR = (1 << TWINT) | (1 << TWSTA) | (1 << TWEN);
+    TWCR = _BV(TWINT) | _BV(TWSTA) | _BV(TWEN);
 
     /* Wait for START being sent */
 
-    while (!(TWCR & (1 << TWINT)))
-        ;
+    loop_until_bit_is_set(TWCR, TWINT);
 
     /* Check that START is being sent correctly */
 
@@ -51,12 +48,11 @@ i2c_send(uint8_t address, uint8_t* data, uint32_t size)
     /* Send the ADDRESS on the bus */
 
     TWDR = address;
-    TWCR = (1 << TWINT) | (1 << TWEN);
+    TWCR = _BV(TWINT) | _BV(TWEN);
 
     /* Wait for ADDRESS being sent */
 
-    while (!(TWCR & (1 << TWINT)))
-        ;
+    loop_until_bit_is_set(TWCR, TWINT);
 
     /* Check acknowledge of SLAVE */
 
@@ -72,12 +68,11 @@ i2c_send(uint8_t address, uint8_t* data, uint32_t size)
 
         /* Send data */
 
-        TWCR = (1 << TWINT) | (1 << TWEN);
+        TWCR = _BV(TWINT) | _BV(TWEN);
 
         /* Wait for data[i] being sent */
 
-        while (!(TWCR & (1 << TWINT)))
-            ;
+        loop_until_bit_is_set(TWCR, TWINT);
 
         /* Check data being correctly received */
 
@@ -87,7 +82,7 @@ i2c_send(uint8_t address, uint8_t* data, uint32_t size)
 
     /* Send STOP */
 
-    TWCR = (1 << TWINT) | (1 << TWEN) | (1 << TWSTO);
+    TWCR = _BV(TWINT) | _BV(TWEN) | _BV(TWSTO);
 
     return 0;
 }

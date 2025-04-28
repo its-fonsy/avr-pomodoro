@@ -3,8 +3,6 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-#include "hal.h"
-
 /* Private functions declarations */
 
 void timer0_init(void);
@@ -34,17 +32,17 @@ void timer0_init(void)
      */
 
     OCR0A = 100;
-    TIMSK0 = (1 << OCIE0A);
-    TCCR0B = (1 << CS01) | (1 << CS00);
-    TCCR0A = (1 << WGM01);
+    TIMSK0 = _BV(OCIE0A);
+    TCCR0B = _BV(CS01) | _BV(CS00);
+    TCCR0A = _BV(WGM01);
 }
 
 void button_init(void)
 {
     /* Set BUTTON as input using pull-up resistor */
 
-    reset_pin(BUTTON_DDR, BUTTON_PIN);
-    set_pin(BUTTON_PORT, BUTTON_PIN);
+    BUTTON_DDR &= ~(_BV(BUTTON_PIN));
+    BUTTON_PORT |= _BV(BUTTON_PIN);
 
     /* Initiate the timer */
 
@@ -76,7 +74,6 @@ uint8_t is_button_pressed(void)
 
 ISR(TIMER0_COMPA_vect)
 {
-    uint8_t button_status;
-    button_status = status_pin(BUTTON_INPUT_PORT, BUTTON_PIN);
-    button_status_history = (button_status_history << 1) | button_status;
+    button_status_history <<= 1;
+    button_status_history |= bit_is_set(BUTTON_INPUT_PORT, BUTTON_PIN) ? 0x01 : 0x00;
 }
