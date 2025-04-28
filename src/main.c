@@ -119,7 +119,10 @@ int main(void)
     }
 }
 
-ISR(TIMER0_COMPA_vect) { button_update(&button); }
+ISR(TIMER0_COMPA_vect)
+{
+    button_update(&button);
+}
 
 ISR(TIMER1_COMPA_vect)
 {
