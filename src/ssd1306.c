@@ -50,17 +50,40 @@ void ssd1306_cmd(ssd1306_t* display, uint8_t* cmd, uint32_t size)
 
 void ssd1306_data(ssd1306_t* display, uint8_t* data, uint32_t size)
 {
+    uint8_t i;
     uint8_t* i2c_packet;
     uint32_t i2c_packet_size;
 
-    i2c_packet_size = size + 1;
-    i2c_packet = (uint8_t*)malloc(sizeof(uint8_t) * i2c_packet_size);
-    i2c_packet[0] = SSD1306_CTRL_BYTE_DATA;
-    memcpy(i2c_packet + 1, data, size);
+    if (size > 254) {
+        i2c_packet = (uint8_t*)malloc(sizeof(uint8_t) * 255);
 
-    display->i2c_write(display->i2c_address, i2c_packet, i2c_packet_size);
+        /* Send data in 254 byte chunk at a time */
 
-    free(i2c_packet);
+        i = 0;
+        while (size > 254) {
+            i2c_packet[0] = SSD1306_CTRL_BYTE_DATA;
+            memcpy(i2c_packet + 1, data + i * 254, 254);
+            display->i2c_write(display->i2c_address, i2c_packet, 255);
+            i++;
+            size = size - 254;
+        }
+
+        /* Last chunk */
+
+        i2c_packet[0] = SSD1306_CTRL_BYTE_DATA;
+        memcpy(i2c_packet + 1, data + i * 254, size);
+        display->i2c_write(display->i2c_address, i2c_packet, size);
+
+        free(i2c_packet);
+
+    } else {
+        i2c_packet_size = size + 1;
+        i2c_packet = (uint8_t*)malloc(sizeof(uint8_t) * i2c_packet_size);
+        i2c_packet[0] = SSD1306_CTRL_BYTE_DATA;
+        memcpy(i2c_packet + 1, data, size);
+        display->i2c_write(display->i2c_address, i2c_packet, i2c_packet_size);
+        free(i2c_packet);
+    }
 }
 
 void ssd1306_goto(ssd1306_t* display, uint8_t column, uint8_t page)
