@@ -112,20 +112,33 @@
 #define SSD1306_CHARGE_PUMP_DISABLED 0x10
 #define SSD1306_CHARGE_PUMP_ENABLED 0x14
 
+/* Structs to interface with the driver */
+
+typedef struct {
+    uint8_t start;
+    uint8_t end;
+} ssd1306_address_boundary_t;
+
+typedef struct {
+    uint8_t i2c_address;
+    int8_t (*i2c_write)(uint8_t, uint8_t*, uint32_t);
+} ssd1306_t;
+
 /* Low level device control functions */
 
-uint8_t ssd1306_data(uint8_t* data, uint32_t size);
-uint8_t ssd1306_cmd(uint8_t* cmd, uint32_t size);
+void ssd1306_data(ssd1306_t* display, uint8_t* data, uint32_t size);
+void ssd1306_cmd(ssd1306_t* display, uint8_t* cmd, uint32_t size);
 
 /* High level functions */
 
-void ssd1306_init(void);
-void ssd1306_clear_screen(void);
-void ssd1306_goto(uint8_t col, uint8_t page);
-void ssd1306_set_column_and_page_address(uint8_t start_col, uint8_t end_col,
-    uint8_t start_page,
-    uint8_t end_page);
-void ssd1306_set_column_address(uint8_t start, uint8_t end);
-void ssd1306_set_page_address(uint8_t start, uint8_t end);
+void ssd1306_init(ssd1306_t* display);
+void ssd1306_clear_screen(ssd1306_t* display);
+void ssd1306_goto(ssd1306_t* display, uint8_t column, uint8_t page);
+void ssd1306_set_column_and_page_address_boundary(
+    ssd1306_t* display,
+    ssd1306_address_boundary_t column,
+    ssd1306_address_boundary_t page);
+void ssd1306_set_column_address_boundary(ssd1306_t* display, uint8_t start, uint8_t end);
+void ssd1306_set_page_address_boundary(ssd1306_t* display, uint8_t start, uint8_t end);
 
 #endif /* __SSD1306_H */

@@ -4,3 +4,4 @@ build
 *.hex
 *.map
 compile_commands.json
+.clang-format

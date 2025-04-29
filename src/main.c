@@ -36,14 +36,17 @@ int main(void)
 
     /* Initialize the display */
 
-    ssd1306_init();
+    ssd1306_t display;
+    display.i2c_address = (SSD1306_I2C_ADDRESS << 1);
+    display.i2c_write = &i2c_send;
+    ssd1306_init(&display);
 
     /* Drawing welcome screen and wait for the user to press the button */
 
     timer1_stop_and_reset();
     timer1_start();
     while (1) {
-        ui_draw_welcome();
+        ui_draw_welcome(&display);
 
         button.lock = BUTTON_LOCKED;
         if (button.status == BUTTON_PRESSED) {
@@ -71,7 +74,7 @@ int main(void)
         switch (fsm_state) {
         case MAIN_FSM_WAIT_FOR_BUTTON:
 
-            ui_draw_wait_for_button(prev_timer_type);
+            ui_draw_wait_for_button(&display, prev_timer_type);
 
             /* When the user press the button start the WORK/PAUSE timer */
 
@@ -94,7 +97,7 @@ int main(void)
                     break;
                 }
 
-                ui_draw_timer(m, s);
+                ui_draw_timer(&display, m, s);
                 timer1_start();
             }
             button.lock = BUTTON_UNLOCKED;
@@ -103,14 +106,14 @@ int main(void)
 
         case MAIN_FSM_TIMER:
 
-            ui_draw_timer(m, s);
+            ui_draw_timer(&display, m, s);
 
             /* When timer has finished change state */
 
             if (m >= 0xFA) {
                 timer1_stop_and_reset();
                 fsm_state = MAIN_FSM_WAIT_FOR_BUTTON;
-                ui_draw_wait_for_button(prev_timer_type);
+                ui_draw_wait_for_button(&display, prev_timer_type);
                 timer1_start();
             }
 

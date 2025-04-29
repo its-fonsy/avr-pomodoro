@@ -2,6 +2,7 @@
 #define __UI_H
 
 #include "font.h"
+#include "ssd1306.h"
 #include <stdint.h>
 
 #define FONT_8x16_OFFSET 2
@@ -43,15 +44,13 @@ typedef struct DisplayContext {
     uint8_t fsm_state;
 } DisplayContext;
 
-void ui_draw_minutes(uint8_t minutes);
-void ui_draw_seconds(uint8_t seconds);
-void ui_draw_dots(void);
-
-void ui_draw_work_timer_elapsed(void);
-
-void ui_draw_timer(uint8_t minutes, uint8_t seconds);
-void ui_print_centered(const char* str);
-void ui_draw_wait_for_button(uint8_t prev_state);
-void ui_draw_welcome(void);
+void ui_draw_minutes(ssd1306_t* dev, uint8_t minutes);
+void ui_draw_seconds(ssd1306_t* dev, uint8_t seconds);
+void ui_draw_dots(ssd1306_t* dev);
+void ui_draw_work_timer_elapsed(ssd1306_t* dev);
+void ui_draw_timer(ssd1306_t* dev, uint8_t minutes, uint8_t seconds);
+void ui_print_centered(ssd1306_t* dev, const char* str);
+void ui_draw_wait_for_button(ssd1306_t* dev, uint8_t prev_state);
+void ui_draw_welcome(ssd1306_t* dev);
 
 #endif /* __UI_H */
