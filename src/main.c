@@ -47,13 +47,8 @@ int main(void)
     timer1_start();
     while (1) {
         ui_draw_welcome(&display);
-
-        button.lock = BUTTON_LOCKED;
-        if (button.status == BUTTON_PRESSED) {
-            button.status = BUTTON_PRESS_ACK;
+        if (button_is_pressed(&button))
             break;
-        }
-        button.lock = BUTTON_UNLOCKED;
     }
 
     /* Prepare the variable for WORK timer */
@@ -78,9 +73,7 @@ int main(void)
 
             /* When the user press the button start the WORK/PAUSE timer */
 
-            button.lock = BUTTON_LOCKED;
-            if (button.status == BUTTON_PRESSED) {
-                button.status = BUTTON_PRESS_ACK;
+            if (button_is_pressed(&button)) {
                 timer1_stop_and_reset();
                 fsm_state = MAIN_FSM_TIMER;
 
@@ -100,7 +93,6 @@ int main(void)
                 ui_draw_timer(&display, m, s);
                 timer1_start();
             }
-            button.lock = BUTTON_UNLOCKED;
 
             break;
 
