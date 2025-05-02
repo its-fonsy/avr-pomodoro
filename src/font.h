@@ -25,6 +25,10 @@ extern const uint8_t* numbers_6x8[];
 extern const graphic_t pause;
 extern const graphic_t work;
 extern const graphic_t timer;
+extern const graphic_t start;
+extern const graphic_t set;
 extern const graphic_t right_arrow;
+extern const graphic_t left_selector;
+extern const graphic_t right_selector;
 
 #endif /* __FONT_H */

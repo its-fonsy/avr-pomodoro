@@ -92,15 +92,49 @@ const graphic_t timer = {
     hmpg_letters
 };
 
+const graphic_t start = {
+    { 8, 9, 0, 7, 9 },
+    { 6, 6, 6, 5, 6 },
+    5,
+    hmpg_letters
+};
+
+const graphic_t set = {
+    { 8, 1, 9, 0, 0 },
+    { 6, 5, 6, 0, 0 },
+    3,
+    hmpg_letters
+};
+
 /* Symbols */
 
 const uint8_t graphic_right_arrow[9] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0xFF, 0x7E, 0x3C, 0x18 };
+const uint8_t graphic_left_selector_5x8[5] = { 0xC3, 0xE7, 0x7E, 0x3C, 0x18 };
+const uint8_t graphic_right_selector_5x8[5] = { 0x18, 0x3C, 0x7E, 0xE7, 0xC3 };
 
-const uint8_t* symbols[] = { graphic_right_arrow };
+const uint8_t* symbols[] = {
+    graphic_right_arrow,
+    graphic_left_selector_5x8,
+    graphic_right_selector_5x8
+};
 
 const graphic_t right_arrow = {
     { 0, 0, 0, 0, 0 },
     { 9, 0, 0, 0, 0 },
+    1,
+    symbols
+};
+
+const graphic_t left_selector = {
+    { 1, 0, 0, 0, 0 },
+    { 5, 0, 0, 0, 0 },
+    1,
+    symbols
+};
+
+const graphic_t right_selector = {
+    { 2, 0, 0, 0, 0 },
+    { 5, 0, 0, 0, 0 },
     1,
     symbols
 };

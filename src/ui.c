@@ -7,29 +7,27 @@
 #include <util/delay.h>
 
 #include "font.h"
+#include "rotary_encoder.h"
 #include "ssd1306.h"
 
-void ui_test(ssd1306_t* dev)
+void ui_test(ssd1306_t* dev, rotary_encoder_t* rotary)
 {
 
     ssd1306_address_boundary_t col;
     ssd1306_address_boundary_t page;
     graphic_t number;
+    graphic_t line1[] = { work, timer, right_arrow };
+    graphic_t line2[] = { pause, timer, right_arrow };
     uint8_t disp_pt;
+    uint8_t i;
 
-    disp_pt = 5;
+    disp_pt = 6;
 
-    ssd1306_goto(dev, disp_pt, 0);
-    ui_print_line(dev, work);
-    disp_pt += ui_graphic_pixel_width(work) + 5;
-
-    ssd1306_goto(dev, disp_pt, 0);
-    ui_print_line(dev, timer);
-    disp_pt += ui_graphic_pixel_width(timer) + 5;
-
-    ssd1306_goto(dev, disp_pt, 0);
-    ui_print_line(dev, right_arrow);
-    disp_pt += ui_graphic_pixel_width(right_arrow) + 5;
+    for (i = 0; i < 3; i++) {
+        ssd1306_goto(dev, disp_pt, 0);
+        ui_print_line(dev, line1[i]);
+        disp_pt += ui_graphic_pixel_width(line1[i]) + 5;
+    }
 
     number = number_to_graphic(25);
     ssd1306_goto(dev, disp_pt, 0);
@@ -43,35 +41,48 @@ void ui_test(ssd1306_t* dev)
 
     page.start = 1;
     page.end = 2;
-
     col.start = 0;
-    col.end = col.start + ui_graphic_pixel_width(pause) - 1;
-    ssd1306_set_column_and_page_address_boundary(dev, col, page);
-    ui_print_between_two_line(dev, pause);
 
-    col.start += ui_graphic_pixel_width(pause) + 5;
-    col.end = col.start + ui_graphic_pixel_width(timer) - 1;
-    ssd1306_set_column_and_page_address_boundary(dev, col, page);
-    ui_print_between_two_line(dev, timer);
-
-    col.start += ui_graphic_pixel_width(timer) + 5;
-    col.end = col.start + ui_graphic_pixel_width(right_arrow) - 1;
-    ssd1306_set_column_and_page_address_boundary(dev, col, page);
-    ui_print_between_two_line(dev, right_arrow);
-
-    number = number_to_graphic(5);
-    col.start += ui_graphic_pixel_width(right_arrow) + 5;
-    col.end = col.start + ui_graphic_pixel_width(number) - 1;
-    ssd1306_set_column_and_page_address_boundary(dev, col, page);
-    ui_print_between_two_line(dev, number);
-
-    col.start += ui_graphic_pixel_width(number) + 5;
-    number = number_to_graphic(30);
-    col.end = col.start + ui_graphic_pixel_width(number) - 1;
-    ssd1306_set_column_and_page_address_boundary(dev, col, page);
-    ui_print_between_two_line(dev, number);
+    for (i = 0; i < 3; i++) {
+        col.end = col.start + ui_graphic_pixel_width(line2[i]) - 1;
+        ssd1306_set_column_and_page_address_boundary(dev, col, page);
+        ui_print_between_two_line(dev, line2[i]);
+        col.start += ui_graphic_pixel_width(line2[i]) + 5;
+    }
 
     ssd1306_reset_column_and_page_boundaries(dev);
+
+    disp_pt += 20;
+    ssd1306_goto(dev, disp_pt, 3);
+    ui_print_line(dev, start);
+
+    disp_pt += 70;
+    ssd1306_goto(dev, disp_pt, 3);
+    ui_print_line(dev, set);
+
+    while (1) {
+
+        if (rotary->lock == ROTARY_ENCODER_LOCKED)
+            continue;
+
+        rotary->lock = ROTARY_ENCODER_LOCKED;
+        switch (rotary->state) {
+        case ROTARY_ENCODER_CCW:
+            ui_clear_right_selectors(dev);
+            ui_print_left_selectors(dev);
+            rotary->state = ROTARY_ENCODER_IDLE;
+            break;
+        case ROTARY_ENCODER_CW:
+            ui_clear_left_selectors(dev);
+            ui_print_right_selectors(dev);
+            rotary->state = ROTARY_ENCODER_IDLE;
+            break;
+        default:
+            break;
+        }
+        rotary->lock = ROTARY_ENCODER_UNLOCKED;
+        _delay_ms(5);
+    }
 }
 
 graphic_t number_to_graphic(uint8_t n)
@@ -167,4 +178,37 @@ uint8_t ui_graphic_pixel_width(graphic_t graphic)
     length -= 1;
 
     return length;
+}
+
+void ui_print_left_selectors(ssd1306_t* dev)
+{
+    ssd1306_goto(dev, 5, 3);
+    ui_print_line(dev, left_selector);
+    ssd1306_goto(dev, 50, 3);
+    ui_print_line(dev, right_selector);
+}
+
+void ui_print_right_selectors(ssd1306_t* dev)
+{
+    ssd1306_goto(dev, 75, 3);
+    ui_print_line(dev, left_selector);
+    ssd1306_goto(dev, 108, 3);
+    ui_print_line(dev, right_selector);
+}
+
+uint8_t blank[5] = { 0 };
+void ui_clear_left_selectors(ssd1306_t* dev)
+{
+    ssd1306_goto(dev, 5, 3);
+    ssd1306_data(dev, blank, 5);
+    ssd1306_goto(dev, 50, 3);
+    ssd1306_data(dev, blank, 5);
+}
+
+void ui_clear_right_selectors(ssd1306_t* dev)
+{
+    ssd1306_goto(dev, 75, 3);
+    ssd1306_data(dev, blank, 5);
+    ssd1306_goto(dev, 108, 3);
+    ssd1306_data(dev, blank, 5);
 }

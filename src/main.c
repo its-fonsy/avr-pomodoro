@@ -6,15 +6,16 @@
 #include <util/delay.h>
 
 #include "button.h"
-#include "font.h"
 #include "gpio.h"
 #include "i2c.h"
 #include "main.h"
+#include "rotary_encoder.h"
 #include "ssd1306.h"
 #include "timers.h"
 #include "ui.h"
 
 button_t button;
+rotary_encoder_t re;
 
 int main(void)
 {
@@ -27,6 +28,10 @@ int main(void)
 
     button_init(&button);
     button.read_pin = &gpio_button_read;
+
+    rotary_encoder_init(&re);
+    re.read_pinA = &rot_enc_read_pinA;
+    re.read_pinB = &rot_enc_read_pinB;
 
     /* Activate the interrupts */
 
@@ -42,7 +47,7 @@ int main(void)
     ssd1306_clear_screen(&display);
     ssd1306_goto(&display, 0, 0);
 
-    ui_test(&display);
+    ui_test(&display, &re);
 
     while (1) {
     }
@@ -51,6 +56,7 @@ int main(void)
 ISR(TIMER0_COMPA_vect)
 {
     button_update(&button);
+    rotary_encoder_update(&re);
 }
 
 ISR(TIMER1_COMPA_vect)
