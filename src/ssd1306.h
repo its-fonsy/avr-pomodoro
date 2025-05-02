@@ -140,5 +140,6 @@ void ssd1306_set_column_and_page_address_boundary(
     ssd1306_address_boundary_t page);
 void ssd1306_set_column_address_boundary(ssd1306_t* display, uint8_t start, uint8_t end);
 void ssd1306_set_page_address_boundary(ssd1306_t* display, uint8_t start, uint8_t end);
+void ssd1306_reset_column_and_page_boundaries(ssd1306_t* display);
 
 #endif /* __SSD1306_H */

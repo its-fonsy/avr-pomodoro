@@ -129,3 +129,10 @@ void ssd1306_set_page_address_boundary(ssd1306_t* display, uint8_t start, uint8_
     uint8_t cmd[] = { SSD1306_CMD_SET_PAGE_ADDRESS, start, end };
     ssd1306_cmd(display, cmd, sizeof(cmd));
 }
+
+void ssd1306_reset_column_and_page_boundaries(ssd1306_t* display)
+{
+    ssd1306_address_boundary_t column = { 0, DISPLAY_WIDTH - 1 };
+    ssd1306_address_boundary_t page = { 0, DISPLAY_HEIGHT / 8 - 1 };
+    ssd1306_set_column_and_page_address_boundary(display, column, page);
+}
