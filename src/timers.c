@@ -1,5 +1,4 @@
 #include "timers.h"
-#include "main.h"
 
 #include <avr/io.h>
 
@@ -37,10 +36,6 @@ void timer1_stop_and_reset(void)
     /* Zero the timer counter */
 
     TCNT1 = 0x00;
-
-    /* Reset the frame counter */
-
-    frame = 0;
 }
 
 void timer0_init(void)

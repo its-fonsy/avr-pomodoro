@@ -6,20 +6,23 @@
 #include <util/delay.h>
 
 #include "button.h"
+#include "fsm.h"
 #include "gpio.h"
 #include "i2c.h"
 #include "main.h"
 #include "rotary_encoder.h"
 #include "ssd1306.h"
 #include "timers.h"
-#include "ui.h"
 
 button_t button;
 rotary_encoder_t re;
 
 int main(void)
 {
-    /* Initialize the 2-wire, button, Timer 1 interface */
+    system_t sys;
+    ssd1306_t display;
+
+    /* Initialize the i2c, button, rotary encoder, TIM 0 and TIM 1 */
 
     i2c_init(4, 4);
     timer1_init();
@@ -39,17 +42,25 @@ int main(void)
 
     /* Initialize the display */
 
-    ssd1306_t display;
     display.i2c_address = (SSD1306_I2C_ADDRESS << 1);
     display.i2c_write = &i2c_send;
-    ssd1306_init(&display);
 
+    ssd1306_init(&display);
     ssd1306_clear_screen(&display);
     ssd1306_goto(&display, 0, 0);
 
-    ui_test(&display, &re);
+    /* Initialize the system FSM */
+
+    sys.state = STATE_INIT;
+    sys.display = &display;
+    sys.rotary_encoder = &re;
+    sys.button = &button;
+
+    // ui_test(display, re);
 
     while (1) {
+        run_state_machine(&sys);
+        _delay_ms(5);
     }
 }
 
