@@ -25,3 +25,31 @@ void rotary_encoder_update(rotary_encoder_t* rotary)
 
     rotary->lock = ROTARY_ENCODER_UNLOCKED;
 }
+
+uint8_t rotary_encoder_is_turned(rotary_encoder_t* rotary)
+{
+
+    uint8_t state;
+
+    state = ROTARY_ENCODER_IDLE;
+
+    if (rotary->lock == ROTARY_ENCODER_LOCKED)
+        return state;
+
+    rotary->lock = ROTARY_ENCODER_LOCKED;
+    switch (rotary->state) {
+    case ROTARY_ENCODER_CCW:
+        state = ROTARY_ENCODER_CCW;
+        rotary->state = ROTARY_ENCODER_IDLE;
+        break;
+    case ROTARY_ENCODER_CW:
+        state = ROTARY_ENCODER_CW;
+        rotary->state = ROTARY_ENCODER_IDLE;
+        break;
+    default:
+        break;
+    }
+    rotary->lock = ROTARY_ENCODER_UNLOCKED;
+
+    return state;
+}

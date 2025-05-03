@@ -24,5 +24,6 @@ typedef struct {
 
 void rotary_encoder_init(rotary_encoder_t* rotary);
 void rotary_encoder_update(rotary_encoder_t* rotary);
+uint8_t rotary_encoder_is_turned(rotary_encoder_t* rotary);
 
 #endif /* __ROTARY_ENCODER_H */
