@@ -30,5 +30,6 @@ extern const graphic_t set;
 extern const graphic_t right_arrow;
 extern const graphic_t left_selector;
 extern const graphic_t right_selector;
+extern const graphic_t dots;
 
 #endif /* __FONT_H */

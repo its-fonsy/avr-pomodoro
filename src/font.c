@@ -111,11 +111,13 @@ const graphic_t set = {
 const uint8_t graphic_right_arrow[9] = { 0x18, 0x18, 0x18, 0x18, 0x18, 0xFF, 0x7E, 0x3C, 0x18 };
 const uint8_t graphic_left_selector_5x8[5] = { 0xC3, 0xE7, 0x7E, 0x3C, 0x18 };
 const uint8_t graphic_right_selector_5x8[5] = { 0x18, 0x3C, 0x7E, 0xE7, 0xC3 };
+const uint8_t graphic_dots_2x8[] = { 0x66, 0x66 };
 
 const uint8_t* symbols[] = {
     graphic_right_arrow,
     graphic_left_selector_5x8,
-    graphic_right_selector_5x8
+    graphic_right_selector_5x8,
+    graphic_dots_2x8
 };
 
 const graphic_t right_arrow = {
@@ -135,6 +137,13 @@ const graphic_t left_selector = {
 const graphic_t right_selector = {
     { 2, 0, 0, 0, 0 },
     { 5, 0, 0, 0, 0 },
+    1,
+    symbols
+};
+
+const graphic_t dots = {
+    { 3, 0, 0, 0, 0 },
+    { 2, 0, 0, 0, 0 },
     1,
     symbols
 };
