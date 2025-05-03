@@ -12,30 +12,34 @@
 
 void ui_test(ssd1306_t* dev, rotary_encoder_t* rotary)
 {
+    int8_t num;
 
     ui_draw_homepage(dev);
 
+    num = 0;
     while (1) {
 
-        if (rotary->lock == ROTARY_ENCODER_LOCKED)
-            continue;
-
-        rotary->lock = ROTARY_ENCODER_LOCKED;
-        switch (rotary->state) {
+        switch (rotary_encoder_is_turned(rotary)) {
         case ROTARY_ENCODER_CCW:
-            ui_clear_right_selectors(dev);
-            ui_draw_left_selectors(dev);
-            rotary->state = ROTARY_ENCODER_IDLE;
+            num++;
+            if (num > 99)
+                num = 99;
+            ui_draw_homepage_work_min(dev, num);
+            ui_draw_homepage_work_sec(dev, num);
+            ui_draw_homepage_pause_min(dev, num);
+            ui_draw_homepage_pause_sec(dev, num);
             break;
         case ROTARY_ENCODER_CW:
-            ui_clear_left_selectors(dev);
-            ui_draw_right_selectors(dev);
-            rotary->state = ROTARY_ENCODER_IDLE;
-            break;
-        default:
+            num--;
+            if (num < 0)
+                num = 0;
+            ui_draw_homepage_work_min(dev, num);
+            ui_draw_homepage_work_sec(dev, num);
+            ui_draw_homepage_pause_min(dev, num);
+            ui_draw_homepage_pause_sec(dev, num);
             break;
         }
-        rotary->lock = ROTARY_ENCODER_UNLOCKED;
+
         _delay_ms(5);
     }
 }
@@ -70,10 +74,17 @@ void ui_draw_homepage_timers_dots(ssd1306_t* dev)
 
 void ui_draw_homepage_work_min(ssd1306_t* dev, uint8_t min)
 {
+    uint8_t blank[6] = { 0 };
     graphic_t number;
+
     number = number_to_graphic(min);
 
-    ssd1306_goto(dev, (min >= 10) ? 85 : 91, 0);
+    if (min < 10) {
+        ssd1306_goto(dev, 85, 0);
+        ssd1306_data(dev, blank, 6);
+    }
+
+    ssd1306_goto(dev, (min < 10) ? 92 : 85, 0);
     ui_draw_graphic_one_line(dev, number);
 }
 
@@ -82,7 +93,9 @@ void ui_draw_homepage_work_sec(ssd1306_t* dev, uint8_t sec)
     graphic_t number;
     number = number_to_graphic(sec);
 
-    if (sec == 0) {
+    if (sec < 10) {
+        number.graphic_lut[1] = number.graphic_lut[0];
+        number.graphic_lut[0] = 0;
         number.graphic_size[1] = 6;
         number.size = 2;
     }
@@ -96,14 +109,22 @@ void ui_draw_homepage_pause_min(ssd1306_t* dev, uint8_t min)
     ssd1306_address_boundary_t col;
     ssd1306_address_boundary_t page;
     graphic_t number;
+    uint8_t blank[6] = { 0 };
 
-    number = number_to_graphic(min);
-
-    col.start = (min >= 10) ? 85 : 91;
-    col.end = col.start + ui_graphic_pixel_width(number) - 1;
     page.start = 1;
     page.end = 2;
+    number = number_to_graphic(min);
 
+    if (min < 10) {
+        col.start = 85;
+        col.end = col.start + 6 - 1;
+        ssd1306_set_column_and_page_address_boundary(dev, col, page);
+        ssd1306_data(dev, blank, 6);
+        ssd1306_data(dev, blank, 6);
+    }
+
+    col.start = (min >= 10) ? 85 : 92;
+    col.end = col.start + ui_graphic_pixel_width(number) - 1;
     ssd1306_set_column_and_page_address_boundary(dev, col, page);
     ui_draw_graphic_between_two_lines(dev, number);
     ssd1306_reset_column_and_page_boundaries(dev);
@@ -116,7 +137,9 @@ void ui_draw_homepage_pause_sec(ssd1306_t* dev, uint8_t sec)
     graphic_t number;
 
     number = number_to_graphic(sec);
-    if (sec == 0) {
+    if (sec < 10) {
+        number.graphic_lut[1] = number.graphic_lut[0];
+        number.graphic_lut[0] = 0;
         number.graphic_size[1] = 6;
         number.size = 2;
     }
