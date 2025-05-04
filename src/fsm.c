@@ -1,7 +1,12 @@
 #include "fsm.h"
 #include "button.h"
 #include "rotary_encoder.h"
+#include "ssd1306.h"
+#include "timers.h"
 #include "ui/homepage.h"
+#include "ui/timer.h"
+
+timer_t tim;
 
 void (*p_state_function_array[])(system_t* sys) = {
     [STATE_INIT] = state_function_init,
@@ -12,7 +17,8 @@ void (*p_state_function_array[])(system_t* sys) = {
     [STATE_SET_WORK_MIN] = state_function_set_work_min,
     [STATE_SET_WORK_SEC] = state_function_set_work_sec,
     [STATE_SET_PAUSE_MIN] = state_function_set_pause_min,
-    [STATE_SET_PAUSE_SEC] = state_function_set_pause_sec
+    [STATE_SET_PAUSE_SEC] = state_function_set_pause_sec,
+    [STATE_WORK_TIMER] = state_function_work_timer
 };
 
 void run_state_machine(system_t* sys)
@@ -22,10 +28,10 @@ void run_state_machine(system_t* sys)
 
 void state_function_init(system_t* sys)
 {
-    sys->work_timer.min = 25;
-    sys->work_timer.sec = 0;
-    sys->pause_timer.min = 5;
-    sys->pause_timer.sec = 0;
+    sys->work_timer.min = 0;
+    sys->work_timer.sec = 5;
+    sys->pause_timer.min = 0;
+    sys->pause_timer.sec = 2;
 
     sys->tick = 0;
     sys->state = STATE_DRAW_HOMEPAGE;
@@ -61,7 +67,15 @@ void state_function_homepage_idle(system_t* sys)
     if (button_is_pressed(sys->button)) {
         switch (sys->selection) {
         case SEL_START:
-            sys->state = STATE_DRAW_HOMEPAGE_SELECT_START;
+            timer1_stop_and_reset();
+            sys->state = STATE_WORK_TIMER;
+            sys->tick = 0;
+            tim.min = sys->work_timer.min;
+            tim.sec = sys->work_timer.sec;
+            ssd1306_clear_screen(sys->display);
+            ui_timer_draw_timer(sys->display, tim.min, tim.sec);
+            ui_timer_draw_dots(sys->display);
+            timer1_start();
             break;
         case SEL_SET:
             sys->state = STATE_SET_WORK_MIN;
@@ -194,6 +208,7 @@ void state_function_set_pause_min(system_t* sys)
         ui_homepage_draw_pause_min(sys->display, sys->pause_timer.min);
     }
 }
+
 void state_function_set_pause_sec(system_t* sys)
 {
     /* Update pause seconds when user turn the rotary encoder */
@@ -227,4 +242,31 @@ void state_function_set_pause_sec(system_t* sys)
         sys->state = STATE_DRAW_HOMEPAGE_SELECT_START;
         ui_homepage_draw_pause_sec(sys->display, sys->pause_timer.sec);
     }
+}
+
+void state_function_work_timer(system_t* sys)
+{
+    static uint8_t tk = 0;
+
+    /* Return one second is not elapsed */
+
+    if (sys->tick % 5 || tk == sys->tick)
+        return;
+
+    tk = sys->tick;
+
+    tim.sec--;
+    if (tim.sec < 0) {
+        tim.sec = 59;
+        tim.min--;
+    }
+
+    if (tim.min < 0) {
+        sys->state = STATE_DRAW_HOMEPAGE;
+        tk = 0;
+        ssd1306_clear_screen(sys->display);
+        return;
+    }
+
+    ui_timer_draw_timer(sys->display, tim.min, tim.sec);
 }

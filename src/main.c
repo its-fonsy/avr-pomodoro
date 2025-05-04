@@ -75,4 +75,6 @@ ISR(TIMER0_COMPA_vect)
 ISR(TIMER1_COMPA_vect)
 {
     sys.tick++;
+    if (sys.tick == 250)
+        sys.tick = 0;
 }

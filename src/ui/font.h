@@ -17,8 +17,8 @@ typedef struct {
     const uint8_t** base_array;
 } graphic_t;
 
-extern const uint8_t font_20x32[][80];
-extern const uint8_t font_8x16[][16];
+extern const uint8_t number_20x32[][80];
+extern const uint8_t timer_dot[10];
 extern const uint8_t* hmpg_letters[];
 extern const uint8_t* numbers_6x8[];
 
