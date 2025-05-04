@@ -7,54 +7,19 @@
 #include <util/delay.h>
 
 #include "font.h"
-#include "rotary_encoder.h"
 #include "ssd1306.h"
 
-void ui_test(ssd1306_t* dev, rotary_encoder_t* rotary)
+void ui_draw_homepage(ssd1306_t* display)
 {
-    int8_t num;
-
-    ui_draw_homepage(dev);
-
-    num = 0;
-    while (1) {
-
-        switch (rotary_encoder_is_turned(rotary)) {
-        case ROTARY_ENCODER_CCW:
-            num++;
-            if (num > 99)
-                num = 99;
-            ui_draw_homepage_work_min(dev, num);
-            ui_draw_homepage_work_sec(dev, num);
-            ui_draw_homepage_pause_min(dev, num);
-            ui_draw_homepage_pause_sec(dev, num);
-            break;
-        case ROTARY_ENCODER_CW:
-            num--;
-            if (num < 0)
-                num = 0;
-            ui_draw_homepage_work_min(dev, num);
-            ui_draw_homepage_work_sec(dev, num);
-            ui_draw_homepage_pause_min(dev, num);
-            ui_draw_homepage_pause_sec(dev, num);
-            break;
-        }
-
-        _delay_ms(5);
-    }
+    ui_draw_homepage_words(display);
+    ui_draw_homepage_work_min(display, 25);
+    ui_draw_homepage_work_sec(display, 0);
+    ui_draw_homepage_timers_dots(display);
+    ui_draw_homepage_pause_min(display, 10);
+    ui_draw_homepage_pause_sec(display, 30);
 }
 
-void ui_draw_homepage(ssd1306_t* dev)
-{
-    ui_draw_homepage_words(dev);
-    ui_draw_homepage_work_min(dev, 25);
-    ui_draw_homepage_work_sec(dev, 0);
-    ui_draw_homepage_timers_dots(dev);
-    ui_draw_homepage_pause_min(dev, 10);
-    ui_draw_homepage_pause_sec(dev, 30);
-}
-
-void ui_draw_homepage_timers_dots(ssd1306_t* dev)
+void ui_draw_homepage_timers_dots(ssd1306_t* display)
 {
     ssd1306_address_boundary_t col;
     ssd1306_address_boundary_t page;
@@ -64,15 +29,62 @@ void ui_draw_homepage_timers_dots(ssd1306_t* dev)
     page.start = 1;
     page.end = 2;
 
-    ssd1306_goto(dev, col.start, 0);
-    ui_draw_graphic_one_line(dev, dots);
+    ssd1306_goto(display, col.start, 0);
+    ui_draw_graphic_one_line(display, dots);
 
-    ssd1306_set_column_and_page_address_boundary(dev, col, page);
-    ui_draw_graphic_between_two_lines(dev, dots);
-    ssd1306_reset_column_and_page_boundaries(dev);
+    ssd1306_set_column_and_page_address_boundary(display, col, page);
+    ui_draw_graphic_between_two_lines(display, dots);
+    ssd1306_reset_column_and_page_boundaries(display);
 }
 
-void ui_draw_homepage_work_min(ssd1306_t* dev, uint8_t min)
+void ui_clear_homepage_work_min(ssd1306_t* display)
+{
+    uint8_t blank[13] = { 0 };
+    ssd1306_goto(display, 85, 0);
+    ssd1306_data(display, blank, 13);
+}
+
+void ui_clear_homepage_work_sec(ssd1306_t* display)
+{
+    uint8_t blank[13] = { 0 };
+    ssd1306_goto(display, 104, 0);
+    ssd1306_data(display, blank, 13);
+}
+
+void ui_clear_homepage_pause_min(ssd1306_t* display)
+{
+    ssd1306_address_boundary_t col;
+    ssd1306_address_boundary_t page;
+    uint8_t blank[13] = { 0 };
+
+    page.start = 1;
+    page.end = 2;
+    col.start = 85;
+    col.end = col.start + 13 - 1;
+
+    ssd1306_set_column_and_page_address_boundary(display, col, page);
+    ssd1306_data(display, blank, 13);
+    ssd1306_data(display, blank, 13);
+    ssd1306_reset_column_and_page_boundaries(display);
+}
+void ui_clear_homepage_pause_sec(ssd1306_t* display)
+{
+    ssd1306_address_boundary_t col;
+    ssd1306_address_boundary_t page;
+    uint8_t blank[13] = { 0 };
+
+    page.start = 1;
+    page.end = 2;
+    col.start = 104;
+    col.end = col.start + 13 - 1;
+
+    ssd1306_set_column_and_page_address_boundary(display, col, page);
+    ssd1306_data(display, blank, 13);
+    ssd1306_data(display, blank, 13);
+    ssd1306_reset_column_and_page_boundaries(display);
+}
+
+void ui_draw_homepage_work_min(ssd1306_t* display, uint8_t min)
 {
     uint8_t blank[6] = { 0 };
     graphic_t number;
@@ -80,15 +92,15 @@ void ui_draw_homepage_work_min(ssd1306_t* dev, uint8_t min)
     number = number_to_graphic(min);
 
     if (min < 10) {
-        ssd1306_goto(dev, 85, 0);
-        ssd1306_data(dev, blank, 6);
+        ssd1306_goto(display, 85, 0);
+        ssd1306_data(display, blank, 6);
     }
 
-    ssd1306_goto(dev, (min < 10) ? 92 : 85, 0);
-    ui_draw_graphic_one_line(dev, number);
+    ssd1306_goto(display, (min < 10) ? 92 : 85, 0);
+    ui_draw_graphic_one_line(display, number);
 }
 
-void ui_draw_homepage_work_sec(ssd1306_t* dev, uint8_t sec)
+void ui_draw_homepage_work_sec(ssd1306_t* display, uint8_t sec)
 {
     graphic_t number;
     number = number_to_graphic(sec);
@@ -100,11 +112,11 @@ void ui_draw_homepage_work_sec(ssd1306_t* dev, uint8_t sec)
         number.size = 2;
     }
 
-    ssd1306_goto(dev, 104, 0);
-    ui_draw_graphic_one_line(dev, number);
+    ssd1306_goto(display, 104, 0);
+    ui_draw_graphic_one_line(display, number);
 }
 
-void ui_draw_homepage_pause_min(ssd1306_t* dev, uint8_t min)
+void ui_draw_homepage_pause_min(ssd1306_t* display, uint8_t min)
 {
     ssd1306_address_boundary_t col;
     ssd1306_address_boundary_t page;
@@ -118,19 +130,19 @@ void ui_draw_homepage_pause_min(ssd1306_t* dev, uint8_t min)
     if (min < 10) {
         col.start = 85;
         col.end = col.start + 6 - 1;
-        ssd1306_set_column_and_page_address_boundary(dev, col, page);
-        ssd1306_data(dev, blank, 6);
-        ssd1306_data(dev, blank, 6);
+        ssd1306_set_column_and_page_address_boundary(display, col, page);
+        ssd1306_data(display, blank, 6);
+        ssd1306_data(display, blank, 6);
     }
 
     col.start = (min >= 10) ? 85 : 92;
     col.end = col.start + ui_graphic_pixel_width(number) - 1;
-    ssd1306_set_column_and_page_address_boundary(dev, col, page);
-    ui_draw_graphic_between_two_lines(dev, number);
-    ssd1306_reset_column_and_page_boundaries(dev);
+    ssd1306_set_column_and_page_address_boundary(display, col, page);
+    ui_draw_graphic_between_two_lines(display, number);
+    ssd1306_reset_column_and_page_boundaries(display);
 }
 
-void ui_draw_homepage_pause_sec(ssd1306_t* dev, uint8_t sec)
+void ui_draw_homepage_pause_sec(ssd1306_t* display, uint8_t sec)
 {
     ssd1306_address_boundary_t col;
     ssd1306_address_boundary_t page;
@@ -149,12 +161,12 @@ void ui_draw_homepage_pause_sec(ssd1306_t* dev, uint8_t sec)
     page.start = 1;
     page.end = 2;
 
-    ssd1306_set_column_and_page_address_boundary(dev, col, page);
-    ui_draw_graphic_between_two_lines(dev, number);
-    ssd1306_reset_column_and_page_boundaries(dev);
+    ssd1306_set_column_and_page_address_boundary(display, col, page);
+    ui_draw_graphic_between_two_lines(display, number);
+    ssd1306_reset_column_and_page_boundaries(display);
 }
 
-void ui_draw_homepage_words(ssd1306_t* dev)
+void ui_draw_homepage_words(ssd1306_t* display)
 {
     ssd1306_address_boundary_t col;
     ssd1306_address_boundary_t page;
@@ -167,8 +179,8 @@ void ui_draw_homepage_words(ssd1306_t* dev)
 
     disp_pt = 6;
     for (i = 0; i < 3; i++) {
-        ssd1306_goto(dev, disp_pt, 0);
-        ui_draw_graphic_one_line(dev, line1[i]);
+        ssd1306_goto(display, disp_pt, 0);
+        ui_draw_graphic_one_line(display, line1[i]);
         disp_pt += ui_graphic_pixel_width(line1[i]) + 5;
     }
 
@@ -179,24 +191,24 @@ void ui_draw_homepage_words(ssd1306_t* dev)
     col.start = 0;
     for (i = 0; i < 3; i++) {
         col.end = col.start + ui_graphic_pixel_width(line2[i]) - 1;
-        ssd1306_set_column_and_page_address_boundary(dev, col, page);
-        ui_draw_graphic_between_two_lines(dev, line2[i]);
+        ssd1306_set_column_and_page_address_boundary(display, col, page);
+        ui_draw_graphic_between_two_lines(display, line2[i]);
         col.start += ui_graphic_pixel_width(line2[i]) + 5;
     }
 
-    ssd1306_reset_column_and_page_boundaries(dev);
+    ssd1306_reset_column_and_page_boundaries(display);
 
     /* Print "START" on bottom line */
 
     disp_pt = 10;
-    ssd1306_goto(dev, disp_pt, 3);
-    ui_draw_graphic_one_line(dev, start);
+    ssd1306_goto(display, disp_pt, 3);
+    ui_draw_graphic_one_line(display, start);
 
     /* Print "SET" on bottom line */
 
     disp_pt = 98;
-    ssd1306_goto(dev, disp_pt, 3);
-    ui_draw_graphic_one_line(dev, set);
+    ssd1306_goto(display, disp_pt, 3);
+    ui_draw_graphic_one_line(display, set);
 }
 graphic_t number_to_graphic(uint8_t n)
 {
@@ -223,7 +235,7 @@ graphic_t number_to_graphic(uint8_t n)
     return number;
 }
 
-void ui_draw_graphic_one_line(ssd1306_t* dev, graphic_t g)
+void ui_draw_graphic_one_line(ssd1306_t* display, graphic_t g)
 {
     uint8_t i;
     uint8_t packet[64] = { 0 };
@@ -233,10 +245,10 @@ void ui_draw_graphic_one_line(ssd1306_t* dev, graphic_t g)
         memcpy(packet + packet_size, g.base_array[g.graphic_lut[i]], g.graphic_size[i]);
         packet_size += g.graphic_size[i] + 1;
     }
-    ssd1306_data(dev, packet, packet_size - 1);
+    ssd1306_data(display, packet, packet_size - 1);
 }
 
-void ui_draw_graphic_between_two_lines(ssd1306_t* dev, graphic_t g)
+void ui_draw_graphic_between_two_lines(ssd1306_t* display, graphic_t g)
 {
     uint8_t i;
     uint8_t k;
@@ -255,7 +267,7 @@ void ui_draw_graphic_between_two_lines(ssd1306_t* dev, graphic_t g)
         packet_size += (g.size > 1) ? 1 : 0;
     }
     packet_size -= (g.size > 1) ? 1 : 0;
-    ssd1306_data(dev, packet, packet_size);
+    ssd1306_data(display, packet, packet_size);
 
     memset(packet, 0x00, 64);
 
@@ -270,7 +282,7 @@ void ui_draw_graphic_between_two_lines(ssd1306_t* dev, graphic_t g)
         packet_size += (g.size > 1) ? 1 : 0;
     }
     packet_size -= (g.size > 1) ? 1 : 0;
-    ssd1306_data(dev, packet, packet_size);
+    ssd1306_data(display, packet, packet_size);
 }
 
 uint8_t ui_graphic_pixel_width(graphic_t graphic)
@@ -293,35 +305,35 @@ uint8_t ui_graphic_pixel_width(graphic_t graphic)
     return length;
 }
 
-void ui_draw_left_selectors(ssd1306_t* dev)
+void ui_draw_left_selectors(ssd1306_t* display)
 {
-    ssd1306_goto(dev, 0, 3);
-    ui_draw_graphic_one_line(dev, left_selector);
-    ssd1306_goto(dev, 48, 3);
-    ui_draw_graphic_one_line(dev, right_selector);
+    ssd1306_goto(display, 0, 3);
+    ui_draw_graphic_one_line(display, left_selector);
+    ssd1306_goto(display, 48, 3);
+    ui_draw_graphic_one_line(display, right_selector);
 }
 
-void ui_draw_right_selectors(ssd1306_t* dev)
+void ui_draw_right_selectors(ssd1306_t* display)
 {
-    ssd1306_goto(dev, 88, 3);
-    ui_draw_graphic_one_line(dev, left_selector);
-    ssd1306_goto(dev, 122, 3);
-    ui_draw_graphic_one_line(dev, right_selector);
+    ssd1306_goto(display, 88, 3);
+    ui_draw_graphic_one_line(display, left_selector);
+    ssd1306_goto(display, 122, 3);
+    ui_draw_graphic_one_line(display, right_selector);
 }
 
 uint8_t blank[5] = { 0 };
-void ui_clear_left_selectors(ssd1306_t* dev)
+void ui_clear_left_selectors(ssd1306_t* display)
 {
-    ssd1306_goto(dev, 0, 3);
-    ssd1306_data(dev, blank, 5);
-    ssd1306_goto(dev, 48, 3);
-    ssd1306_data(dev, blank, 5);
+    ssd1306_goto(display, 0, 3);
+    ssd1306_data(display, blank, 5);
+    ssd1306_goto(display, 48, 3);
+    ssd1306_data(display, blank, 5);
 }
 
-void ui_clear_right_selectors(ssd1306_t* dev)
+void ui_clear_right_selectors(ssd1306_t* display)
 {
-    ssd1306_goto(dev, 88, 3);
-    ssd1306_data(dev, blank, 5);
-    ssd1306_goto(dev, 122, 3);
-    ssd1306_data(dev, blank, 5);
+    ssd1306_goto(display, 88, 3);
+    ssd1306_data(display, blank, 5);
+    ssd1306_goto(display, 122, 3);
+    ssd1306_data(display, blank, 5);
 }

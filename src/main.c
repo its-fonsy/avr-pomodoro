@@ -2,7 +2,6 @@
 
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#include <stdint.h>
 #include <util/delay.h>
 
 #include "button.h"
@@ -16,10 +15,10 @@
 
 button_t button;
 rotary_encoder_t re;
+system_t sys;
 
 int main(void)
 {
-    system_t sys;
     ssd1306_t display;
 
     /* Initialize the i2c, button, rotary encoder, TIM 0 and TIM 1 */
@@ -56,7 +55,10 @@ int main(void)
     sys.rotary_encoder = &re;
     sys.button = &button;
 
-    // ui_test(display, re);
+    /* Start the TIM1 */
+
+    timer1_stop_and_reset();
+    timer1_start();
 
     while (1) {
         run_state_machine(&sys);
@@ -72,4 +74,5 @@ ISR(TIMER0_COMPA_vect)
 
 ISR(TIMER1_COMPA_vect)
 {
+    sys.tick++;
 }

@@ -10,12 +10,12 @@
  * In this configuration (cpu @ 16MHz) the timer triggers an interrupt every
  * 16us.
  *
- * With OCR1A set to 62500 the timer ticks every 1s.
+ * With OCR1A set to 12500 the timer ticks every 200ms.
  */
 
 void timer1_init(void)
 {
-    OCR1A = 62500;
+    OCR1A = 12500;
     TIMSK1 = (1 << OCIE1A);
 }
 

@@ -12,28 +12,46 @@ typedef enum {
     STATE_DRAW_HOMEPAGE,
     STATE_HOMEPAGE_IDLE,
     STATE_DRAW_HOMEPAGE_SELECT_START,
-    STATE_DRAW_HOMEPAGE_SELECT_SET
+    STATE_DRAW_HOMEPAGE_SELECT_SET,
+    STATE_SET_WORK_MIN,
+    STATE_SET_WORK_SEC,
+    STATE_SET_PAUSE_MIN,
+    STATE_SET_PAUSE_SEC
 } fsm_state_t;
 
+typedef enum {
+    SEL_NONE = 0,
+    SEL_START,
+    SEL_SET
+} selection_t;
+
 typedef struct {
-    uint8_t minutes;
-    uint8_t seconds;
+    int8_t min;
+    int8_t sec;
 } timer_t;
 
 typedef struct {
     fsm_state_t state;
+    selection_t selection;
     timer_t work_timer;
     timer_t pause_timer;
+    uint8_t tick;
     button_t* button;
     rotary_encoder_t* rotary_encoder;
     ssd1306_t* display;
 } system_t;
 
 void state_function_init(system_t* sys);
+
 void state_function_draw_homepage(system_t* sys);
 void state_function_draw_homepage_sel_start(system_t* sys);
 void state_function_draw_homepage_sel_set(system_t* sys);
 void state_function_homepage_idle(system_t* sys);
+
+void state_function_set_work_min(system_t* sys);
+void state_function_set_work_sec(system_t* sys);
+void state_function_set_pause_min(system_t* sys);
+void state_function_set_pause_sec(system_t* sys);
 
 void run_state_machine(system_t* sys);
 
