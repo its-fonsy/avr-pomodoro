@@ -1,7 +1,7 @@
 #include "fsm.h"
 #include "button.h"
 #include "rotary_encoder.h"
-#include "ui.h"
+#include "ui/homepage.h"
 
 void (*p_state_function_array[])(system_t* sys) = {
     [STATE_INIT] = state_function_init,
@@ -36,15 +36,15 @@ void state_function_draw_homepage(system_t* sys)
 {
     sys->state = STATE_DRAW_HOMEPAGE_SELECT_START;
 
-    ui_draw_homepage_words(sys->display);
+    ui_homepage_draw_words(sys->display);
 
-    ui_draw_homepage_work_min(sys->display, sys->work_timer.min);
-    ui_draw_homepage_work_sec(sys->display, sys->work_timer.sec);
+    ui_homepage_draw_work_min(sys->display, sys->work_timer.min);
+    ui_homepage_draw_work_sec(sys->display, sys->work_timer.sec);
 
-    ui_draw_homepage_timers_dots(sys->display);
+    ui_homepage_draw_timers_dots(sys->display);
 
-    ui_draw_homepage_pause_min(sys->display, sys->pause_timer.min);
-    ui_draw_homepage_pause_sec(sys->display, sys->pause_timer.sec);
+    ui_homepage_draw_pause_min(sys->display, sys->pause_timer.min);
+    ui_homepage_draw_pause_sec(sys->display, sys->pause_timer.sec);
 }
 
 void state_function_homepage_idle(system_t* sys)
@@ -65,7 +65,7 @@ void state_function_homepage_idle(system_t* sys)
             break;
         case SEL_SET:
             sys->state = STATE_SET_WORK_MIN;
-            ui_clear_right_selectors(sys->display);
+            ui_homepage_clear_right_selectors(sys->display);
             break;
         default:
             sys->state = STATE_DRAW_HOMEPAGE_SELECT_START;
@@ -76,16 +76,16 @@ void state_function_homepage_idle(system_t* sys)
 
 void state_function_draw_homepage_sel_start(system_t* sys)
 {
-    ui_clear_right_selectors(sys->display);
-    ui_draw_left_selectors(sys->display);
+    ui_homepage_clear_right_selectors(sys->display);
+    ui_homepage_draw_left_selectors(sys->display);
     sys->state = STATE_HOMEPAGE_IDLE;
     sys->selection = SEL_START;
 }
 
 void state_function_draw_homepage_sel_set(system_t* sys)
 {
-    ui_draw_right_selectors(sys->display);
-    ui_clear_left_selectors(sys->display);
+    ui_homepage_draw_right_selectors(sys->display);
+    ui_homepage_clear_left_selectors(sys->display);
     sys->state = STATE_HOMEPAGE_IDLE;
     sys->selection = SEL_SET;
 }
@@ -112,16 +112,16 @@ void state_function_set_work_min(system_t* sys)
     /* Work minutes blink */
 
     if (sys->tick % 2) {
-        ui_draw_homepage_work_min(sys->display, sys->work_timer.min);
+        ui_homepage_draw_work_min(sys->display, sys->work_timer.min);
     } else {
-        ui_clear_homepage_work_min(sys->display);
+        ui_homepage_clear_work_min(sys->display);
     }
 
     /* Change state on button press */
 
     if (button_is_pressed(sys->button)) {
         sys->state = STATE_SET_WORK_SEC;
-        ui_draw_homepage_work_min(sys->display, sys->work_timer.min);
+        ui_homepage_draw_work_min(sys->display, sys->work_timer.min);
     }
 }
 
@@ -147,16 +147,16 @@ void state_function_set_work_sec(system_t* sys)
     /* Work seconds blink */
 
     if (sys->tick % 2) {
-        ui_draw_homepage_work_sec(sys->display, sys->work_timer.sec);
+        ui_homepage_draw_work_sec(sys->display, sys->work_timer.sec);
     } else {
-        ui_clear_homepage_work_sec(sys->display);
+        ui_homepage_clear_work_sec(sys->display);
     }
 
     /* Change state on button press */
 
     if (button_is_pressed(sys->button)) {
         sys->state = STATE_SET_PAUSE_MIN;
-        ui_draw_homepage_work_sec(sys->display, sys->work_timer.sec);
+        ui_homepage_draw_work_sec(sys->display, sys->work_timer.sec);
     }
 }
 
@@ -182,16 +182,16 @@ void state_function_set_pause_min(system_t* sys)
     /* Pause minutes blink */
 
     if (sys->tick % 2) {
-        ui_draw_homepage_pause_min(sys->display, sys->pause_timer.min);
+        ui_homepage_draw_pause_min(sys->display, sys->pause_timer.min);
     } else {
-        ui_clear_homepage_pause_min(sys->display);
+        ui_homepage_clear_pause_min(sys->display);
     }
 
     /* Change state on button press */
 
     if (button_is_pressed(sys->button)) {
         sys->state = STATE_SET_PAUSE_SEC;
-        ui_draw_homepage_pause_min(sys->display, sys->pause_timer.min);
+        ui_homepage_draw_pause_min(sys->display, sys->pause_timer.min);
     }
 }
 void state_function_set_pause_sec(system_t* sys)
@@ -216,15 +216,15 @@ void state_function_set_pause_sec(system_t* sys)
     /* Pause seconds blink */
 
     if (sys->tick % 2) {
-        ui_draw_homepage_pause_sec(sys->display, sys->pause_timer.sec);
+        ui_homepage_draw_pause_sec(sys->display, sys->pause_timer.sec);
     } else {
-        ui_clear_homepage_pause_sec(sys->display);
+        ui_homepage_clear_pause_sec(sys->display);
     }
 
     /* Change state on button press */
 
     if (button_is_pressed(sys->button)) {
         sys->state = STATE_DRAW_HOMEPAGE_SELECT_START;
-        ui_draw_homepage_pause_sec(sys->display, sys->pause_timer.sec);
+        ui_homepage_draw_pause_sec(sys->display, sys->pause_timer.sec);
     }
 }

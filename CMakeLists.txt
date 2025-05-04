@@ -34,7 +34,7 @@ set(SRC_PATH     "${BASE_PATH}/src")
 set(LIB_DIR_PATH "${BASE_PATH}/lib")
 
 # Files to be compiled
-file(GLOB SRC_FILES "${SRC_PATH}/*.c")
+file(GLOB SRC_FILES "${SRC_PATH}/*.c" "${SRC_PATH}/**/*.c")
 
 set(LIB_SRC_FILES)
 set(LIB_INC_PATH)

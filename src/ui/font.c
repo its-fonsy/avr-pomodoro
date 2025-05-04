@@ -29,44 +29,44 @@ const uint8_t graphic_U_6x8[6] = { 0x7F, 0xFF, 0xC0, 0xC0, 0xFF, 0x7F };
 const uint8_t graphic_W_7x8[7] = { 0xFF, 0xFF, 0x60, 0x78, 0x60, 0xFF, 0xFF };
 
 const uint8_t* hmpg_letters[] = {
-    graphic_A_6x8,
-    graphic_E_5x8,
-    graphic_I_2x8,
-    graphic_K_5x8,
-    graphic_M_8x8,
-    graphic_O_6x8,
-    graphic_P_5x8,
-    graphic_R_5x8,
-    graphic_S_6x8,
-    graphic_T_6x8,
-    graphic_U_6x8,
-    graphic_W_7x8,
+    [0] = graphic_A_6x8,
+    [1] = graphic_E_5x8,
+    [2] = graphic_I_2x8,
+    [3] = graphic_K_5x8,
+    [4] = graphic_M_8x8,
+    [5] = graphic_O_6x8,
+    [6] = graphic_P_5x8,
+    [7] = graphic_R_5x8,
+    [8] = graphic_S_6x8,
+    [9] = graphic_T_6x8,
+    [10] = graphic_U_6x8,
+    [11] = graphic_W_7x8,
 };
 
 /* Numbers 6x8 */
 
-const uint8_t graphic_0_6x8[] = { 0x7E, 0xFF, 0xC3, 0xC3, 0xFF, 0x7E };
-const uint8_t graphic_1_6x8[] = { 0x06, 0x06, 0xFF, 0xFF, 0x00, 0x00 };
-const uint8_t graphic_2_6x8[] = { 0xC3, 0xE3, 0xF3, 0xFB, 0xDF, 0xCF };
-const uint8_t graphic_3_6x8[] = { 0xC3, 0xC3, 0xDB, 0xDB, 0xFF, 0xFF };
-const uint8_t graphic_4_6x8[] = { 0x3F, 0x3F, 0x30, 0x30, 0xFF, 0xFF };
-const uint8_t graphic_5_6x8[] = { 0xDF, 0xDF, 0xDB, 0xDB, 0xFB, 0x73 };
-const uint8_t graphic_6_6x8[] = { 0xFF, 0xFF, 0xD8, 0xD8, 0xF8, 0xF0 };
-const uint8_t graphic_7_6x8[] = { 0x03, 0x03, 0x1B, 0x1B, 0xFF, 0xFF };
-const uint8_t graphic_8_6x8[] = { 0x7E, 0xFF, 0xDB, 0xDB, 0xFF, 0x7E };
-const uint8_t graphic_9_6x8[] = { 0x0E, 0x1F, 0x1B, 0x1B, 0xFF, 0xFF };
+const uint8_t number_0_6x8[6] = { 0x7E, 0xFF, 0xC3, 0xC3, 0xFF, 0x7E };
+const uint8_t number_1_6x8[6] = { 0x06, 0x06, 0xFF, 0xFF, 0x00, 0x00 };
+const uint8_t number_2_6x8[6] = { 0xE3, 0xF3, 0xFB, 0xDF, 0xCF, 0xC7 };
+const uint8_t number_3_6x8[6] = { 0xC3, 0xC3, 0xDB, 0xDB, 0xFF, 0xFF };
+const uint8_t number_4_6x8[6] = { 0x3F, 0x3F, 0x30, 0x30, 0xFF, 0xFF };
+const uint8_t number_5_6x8[6] = { 0xDF, 0xDF, 0xDB, 0xDB, 0xFB, 0x73 };
+const uint8_t number_6_6x8[6] = { 0xFF, 0xFF, 0xDB, 0xDB, 0xFB, 0xF3 };
+const uint8_t number_7_6x8[6] = { 0x03, 0x03, 0x03, 0x03, 0xFF, 0xFF };
+const uint8_t number_8_6x8[6] = { 0x7E, 0xFF, 0xDB, 0xDB, 0xFF, 0x7E };
+const uint8_t number_9_6x8[6] = { 0x0E, 0x1F, 0x1B, 0x1B, 0xFF, 0xFF };
 
 const uint8_t* numbers_6x8[] = {
-    graphic_0_6x8,
-    graphic_1_6x8,
-    graphic_2_6x8,
-    graphic_3_6x8,
-    graphic_4_6x8,
-    graphic_5_6x8,
-    graphic_6_6x8,
-    graphic_7_6x8,
-    graphic_8_6x8,
-    graphic_9_6x8
+    [0] = number_0_6x8,
+    [1] = number_1_6x8,
+    [2] = number_2_6x8,
+    [3] = number_3_6x8,
+    [4] = number_4_6x8,
+    [5] = number_5_6x8,
+    [6] = number_6_6x8,
+    [7] = number_7_6x8,
+    [8] = number_8_6x8,
+    [9] = number_9_6x8
 };
 
 /* Words */
