@@ -1,5 +1,9 @@
 #include "timer.h"
 #include "font.h"
+#include <avr/pgmspace.h>
+#include <stdint.h>
+
+static uint8_t buffer[80] = { 0 };
 
 void ui_timer_draw_minutes(ssd1306_t* display, uint8_t minute)
 {
@@ -14,22 +18,23 @@ void ui_timer_draw_minutes(ssd1306_t* display, uint8_t minute)
 
     /* Draw MSB */
 
+    memcpy_P(buffer, &(numbers_32px[tens]), 80);
     column.start = FONT_MINUTES_X;
     column.end = FONT_MINUTES_X + FONT_20x32_WIDTH - 1;
     ssd1306_set_column_address_boundary(display, column.start, column.end);
-    ssd1306_data(display, (uint8_t*)numbers_32px[tens], sizeof(numbers_32px[tens]));
+    ssd1306_data(display, buffer, 80);
 
     /* Draw LSB */
 
+    memcpy_P(buffer, &(numbers_32px[unit]), 80);
     column.start = FONT_MINUTES_X + FONT_20x32_WIDTH + FONT_OFFSET;
     column.end = FONT_MINUTES_X + FONT_OFFSET + 2 * FONT_20x32_WIDTH - 1;
     ssd1306_set_column_address_boundary(display, column.start, column.end);
-    ssd1306_data(display, (uint8_t*)numbers_32px[unit], sizeof(numbers_32px[unit]));
+    ssd1306_data(display, buffer, 80);
 }
 
 void ui_timer_draw_seconds(ssd1306_t* display, uint8_t second)
 {
-
     uint8_t unit;
     uint8_t tens;
     ssd1306_address_boundary_t column;
@@ -41,17 +46,19 @@ void ui_timer_draw_seconds(ssd1306_t* display, uint8_t second)
 
     /* Draw tens digit */
 
+    memcpy_P(buffer, &(numbers_32px[tens]), 80);
     column.start = FONT_SECONDS_X;
     column.end = FONT_SECONDS_X + FONT_20x32_WIDTH - 1;
     ssd1306_set_column_address_boundary(display, column.start, column.end);
-    ssd1306_data(display, (uint8_t*)numbers_32px[tens], sizeof(numbers_32px[tens]));
+    ssd1306_data(display, buffer, 80);
 
     /* Draw unit digit */
 
+    memcpy_P(buffer, &(numbers_32px[unit]), 80);
     column.start = FONT_SECONDS_X + FONT_20x32_WIDTH + FONT_OFFSET;
     column.end = FONT_SECONDS_X + FONT_20x32_WIDTH + FONT_OFFSET + FONT_20x32_WIDTH - 1;
     ssd1306_set_column_address_boundary(display, column.start, column.end);
-    ssd1306_data(display, (uint8_t*)numbers_32px[unit], sizeof(numbers_32px[unit]));
+    ssd1306_data(display, buffer, 80);
 }
 
 void ui_timer_draw_dots(ssd1306_t* display)

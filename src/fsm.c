@@ -22,7 +22,9 @@ void (*p_state_function_array[])(system_t* sys) = {
     [STATE_WORK_TIMER] = state_function_work_timer,
     [STATE_WORK_FINISHED] = state_function_work_finished,
     [STATE_PAUSE_TIMER] = state_function_pause_timer,
-    [STATE_PAUSE_FINISHED] = state_function_pause_finished
+    [STATE_PAUSE_FINISHED_IDLE] = state_function_pause_finished_idle,
+    [STATE_PAUSE_FINISHED_SEL_RESTART] = state_function_pause_finished_sel_restart,
+    [STATE_PAUSE_FINISHED_SEL_SET_TIMER] = state_function_pause_finished_sel_set_timer
 };
 
 void run_state_machine(system_t* sys)
@@ -33,9 +35,9 @@ void run_state_machine(system_t* sys)
 void state_function_init(system_t* sys)
 {
     sys->work_timer.min = 0;
-    sys->work_timer.sec = 5;
+    sys->work_timer.sec = 0;
     sys->pause_timer.min = 0;
-    sys->pause_timer.sec = 2;
+    sys->pause_timer.sec = 0;
 
     sys->tick = 0;
     sys->state = STATE_DRAW_HOMEPAGE;
@@ -70,7 +72,7 @@ void state_function_homepage_idle(system_t* sys)
 
     if (button_is_pressed(sys->button)) {
         switch (sys->selection) {
-        case SEL_START:
+        case SEL_HOMEPAGE_START:
             timer1_stop_and_reset();
             sys->state = STATE_WORK_TIMER;
             sys->tick = 0;
@@ -81,7 +83,7 @@ void state_function_homepage_idle(system_t* sys)
             ui_timer_draw_dots(sys->display);
             timer1_start();
             break;
-        case SEL_SET:
+        case SEL_HOMEPAGE_SET:
             sys->state = STATE_SET_WORK_MIN;
             ui_homepage_clear_right_selectors(sys->display);
             break;
@@ -97,7 +99,7 @@ void state_function_draw_homepage_sel_start(system_t* sys)
     ui_homepage_clear_right_selectors(sys->display);
     ui_homepage_draw_left_selectors(sys->display);
     sys->state = STATE_HOMEPAGE_IDLE;
-    sys->selection = SEL_START;
+    sys->selection = SEL_HOMEPAGE_START;
 }
 
 void state_function_draw_homepage_sel_set(system_t* sys)
@@ -105,7 +107,7 @@ void state_function_draw_homepage_sel_set(system_t* sys)
     ui_homepage_draw_right_selectors(sys->display);
     ui_homepage_clear_left_selectors(sys->display);
     sys->state = STATE_HOMEPAGE_IDLE;
-    sys->selection = SEL_SET;
+    sys->selection = SEL_HOMEPAGE_SET;
 }
 
 void state_function_set_work_min(system_t* sys)
@@ -270,6 +272,7 @@ void state_function_work_timer(system_t* sys)
     if (tim.min < 0) {
         sys->state = STATE_WORK_FINISHED;
         tk = 0;
+        button_is_pressed(sys->button);
         ssd1306_clear_screen(sys->display);
         ui_page_draw_work_finished(sys->display);
         return;
@@ -313,16 +316,73 @@ void state_function_pause_timer(system_t* sys)
     }
 
     if (tim.min < 0) {
-        sys->state = STATE_DRAW_HOMEPAGE;
+        sys->state = STATE_PAUSE_FINISHED_SEL_RESTART;
         tk = 0;
         ssd1306_clear_screen(sys->display);
-        // ui_page_draw_work_finished(sys->display);
+        ui_page_draw_pause_finished(sys->display);
         return;
     }
 
     ui_timer_draw_timer(sys->display, tim.min, tim.sec);
 }
 
-void state_function_pause_finished(system_t* sys)
+void state_function_pause_finished_idle(system_t* sys)
 {
+    switch (rotary_encoder_is_turned(sys->rotary_encoder)) {
+    case ROTARY_ENCODER_CW:
+        sys->state = STATE_PAUSE_FINISHED_SEL_RESTART;
+        return;
+    case ROTARY_ENCODER_CCW:
+        sys->state = STATE_PAUSE_FINISHED_SEL_SET_TIMER;
+        return;
+    }
+
+    if (button_is_pressed(sys->button)) {
+        switch (sys->selection) {
+        case SEL_PAUSE_FINISHED_SET_TIMER:
+            sys->state = STATE_SET_WORK_MIN;
+
+            /* Draw homepage */
+            ssd1306_clear_screen(sys->display);
+            ui_homepage_draw_words(sys->display);
+            ui_homepage_draw_work_min(sys->display, sys->work_timer.min);
+            ui_homepage_draw_work_sec(sys->display, sys->work_timer.sec);
+            ui_homepage_draw_timers_dots(sys->display);
+            ui_homepage_draw_pause_min(sys->display, sys->pause_timer.min);
+            ui_homepage_draw_pause_sec(sys->display, sys->pause_timer.sec);
+
+            break;
+        case SEL_PAUSE_FINISHED_RESTART:
+            timer1_stop_and_reset();
+            sys->state = STATE_WORK_TIMER;
+            sys->tick = 0;
+            tim.min = sys->work_timer.min;
+            tim.sec = sys->work_timer.sec;
+            ssd1306_clear_screen(sys->display);
+            ui_timer_draw_timer(sys->display, tim.min, tim.sec);
+            ui_timer_draw_dots(sys->display);
+            timer1_start();
+            break;
+        default:
+            sys->state = STATE_DRAW_HOMEPAGE;
+            ssd1306_clear_screen(sys->display);
+            break;
+        }
+    }
+}
+
+void state_function_pause_finished_sel_restart(system_t* sys)
+{
+    ui_page_clear_right_selectors(sys->display);
+    ui_page_draw_left_selectors(sys->display);
+    sys->state = STATE_PAUSE_FINISHED_IDLE;
+    sys->selection = SEL_PAUSE_FINISHED_RESTART;
+}
+
+void state_function_pause_finished_sel_set_timer(system_t* sys)
+{
+    ui_page_clear_left_selectors(sys->display);
+    ui_page_draw_right_selectors(sys->display);
+    sys->state = STATE_PAUSE_FINISHED_IDLE;
+    sys->selection = SEL_PAUSE_FINISHED_SET_TIMER;
 }

@@ -26,6 +26,7 @@ extern const graphic_t work_8px;
 extern const graphic_t timer_8px;
 extern const graphic_t start_8px;
 extern const graphic_t set_8px;
+extern const graphic_t repeat_8px;
 extern const graphic_t right_arrow_8px;
 extern const graphic_t left_selector_8px;
 extern const graphic_t right_selector_8px;

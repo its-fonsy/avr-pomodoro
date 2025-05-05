@@ -1,6 +1,7 @@
 #include "utils.h"
 
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include <stdint.h>
 #include <string.h>
 
@@ -114,14 +115,14 @@ void ui_util_draw_graphic_16px_two_line(ssd1306_t* display, graphic_t g)
     packet_size = 0;
 
     for (i = 0; i < g.size; i++) {
-        memcpy(packet + packet_size, g.base_array[g.graphic_lut[i]], g.graphic_size[i]);
+        memcpy_P(packet + packet_size, g.base_array[g.graphic_lut[i]], g.graphic_size[i]);
         packet_size += g.graphic_size[i] + 2;
     }
     ssd1306_data(display, packet, packet_size - 2);
 
     packet_size = 0;
     for (i = 0; i < g.size; i++) {
-        memcpy(
+        memcpy_P(
             packet + packet_size,
             g.base_array[g.graphic_lut[i]] + g.graphic_size[i],
             g.graphic_size[i]);

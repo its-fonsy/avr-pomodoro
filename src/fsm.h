@@ -20,13 +20,17 @@ typedef enum {
     STATE_WORK_TIMER,
     STATE_WORK_FINISHED,
     STATE_PAUSE_TIMER,
-    STATE_PAUSE_FINISHED
+    STATE_PAUSE_FINISHED_IDLE,
+    STATE_PAUSE_FINISHED_SEL_RESTART,
+    STATE_PAUSE_FINISHED_SEL_SET_TIMER,
 } fsm_state_t;
 
 typedef enum {
     SEL_NONE = 0,
-    SEL_START,
-    SEL_SET
+    SEL_HOMEPAGE_START,
+    SEL_HOMEPAGE_SET,
+    SEL_PAUSE_FINISHED_RESTART,
+    SEL_PAUSE_FINISHED_SET_TIMER,
 } selection_t;
 
 typedef struct {
@@ -60,7 +64,9 @@ void state_function_set_pause_sec(system_t* sys);
 void state_function_work_timer(system_t* sys);
 void state_function_work_finished(system_t* sys);
 void state_function_pause_timer(system_t* sys);
-void state_function_pause_finished(system_t* sys);
+void state_function_pause_finished_idle(system_t* sys);
+void state_function_pause_finished_sel_restart(system_t* sys);
+void state_function_pause_finished_sel_set_timer(system_t* sys);
 
 void run_state_machine(system_t* sys);
 
