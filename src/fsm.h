@@ -17,7 +17,8 @@ typedef enum {
     STATE_SET_WORK_SEC,
     STATE_SET_PAUSE_MIN,
     STATE_SET_PAUSE_SEC,
-    STATE_WORK_TIMER
+    STATE_WORK_TIMER,
+    STATE_WORK_FINISHED
 } fsm_state_t;
 
 typedef enum {
@@ -55,6 +56,7 @@ void state_function_set_pause_min(system_t* sys);
 void state_function_set_pause_sec(system_t* sys);
 
 void state_function_work_timer(system_t* sys);
+void state_function_work_finished(system_t* sys);
 
 void run_state_machine(system_t* sys);
 

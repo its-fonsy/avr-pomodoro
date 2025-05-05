@@ -101,9 +101,11 @@ void ssd1306_clear_screen(ssd1306_t* display)
     uint8_t i;
     uint8_t zeros[DISPLAY_WIDTH] = { 0 };
 
+    ssd1306_reset_column_and_page_boundaries(display);
+
     for (i = 0; i < DISPLAY_HEIGHT / 8; i++) {
         ssd1306_goto(display, 0, i);
-        ssd1306_data(display, zeros, sizeof(zeros));
+        ssd1306_data(display, zeros, DISPLAY_WIDTH);
     }
 }
 

@@ -4,6 +4,7 @@
 #include "ssd1306.h"
 #include "timers.h"
 #include "ui/homepage.h"
+#include "ui/pages.h"
 #include "ui/timer.h"
 
 timer_t tim;
@@ -18,7 +19,8 @@ void (*p_state_function_array[])(system_t* sys) = {
     [STATE_SET_WORK_SEC] = state_function_set_work_sec,
     [STATE_SET_PAUSE_MIN] = state_function_set_pause_min,
     [STATE_SET_PAUSE_SEC] = state_function_set_pause_sec,
-    [STATE_WORK_TIMER] = state_function_work_timer
+    [STATE_WORK_TIMER] = state_function_work_timer,
+    [STATE_WORK_FINISHED] = state_function_work_finished
 };
 
 void run_state_machine(system_t* sys)
@@ -248,10 +250,12 @@ void state_function_work_timer(system_t* sys)
 {
     static uint8_t tk = 0;
 
-    /* Return one second is not elapsed */
+    /* Return if one second is not elapsed */
 
     if (sys->tick % 5 || tk == sys->tick)
         return;
+
+    /* Update timer minute and second */
 
     tk = sys->tick;
 
@@ -262,11 +266,20 @@ void state_function_work_timer(system_t* sys)
     }
 
     if (tim.min < 0) {
-        sys->state = STATE_DRAW_HOMEPAGE;
+        sys->state = STATE_WORK_FINISHED;
         tk = 0;
         ssd1306_clear_screen(sys->display);
+        ui_page_draw_work_finished(sys->display);
         return;
     }
 
     ui_timer_draw_timer(sys->display, tim.min, tim.sec);
+}
+
+void state_function_work_finished(system_t* sys)
+{
+    if (button_is_pressed(sys->button)) {
+        sys->state = STATE_DRAW_HOMEPAGE;
+        ssd1306_clear_screen(sys->display);
+    }
 }

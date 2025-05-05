@@ -17,14 +17,14 @@ void ui_timer_draw_minutes(ssd1306_t* display, uint8_t minute)
     column.start = FONT_MINUTES_X;
     column.end = FONT_MINUTES_X + FONT_20x32_WIDTH - 1;
     ssd1306_set_column_address_boundary(display, column.start, column.end);
-    ssd1306_data(display, (uint8_t*)number_20x32[tens], sizeof(number_20x32[tens]));
+    ssd1306_data(display, (uint8_t*)numbers_32px[tens], sizeof(numbers_32px[tens]));
 
     /* Draw LSB */
 
     column.start = FONT_MINUTES_X + FONT_20x32_WIDTH + FONT_OFFSET;
     column.end = FONT_MINUTES_X + FONT_OFFSET + 2 * FONT_20x32_WIDTH - 1;
     ssd1306_set_column_address_boundary(display, column.start, column.end);
-    ssd1306_data(display, (uint8_t*)number_20x32[unit], sizeof(number_20x32[unit]));
+    ssd1306_data(display, (uint8_t*)numbers_32px[unit], sizeof(numbers_32px[unit]));
 }
 
 void ui_timer_draw_seconds(ssd1306_t* display, uint8_t second)
@@ -44,14 +44,14 @@ void ui_timer_draw_seconds(ssd1306_t* display, uint8_t second)
     column.start = FONT_SECONDS_X;
     column.end = FONT_SECONDS_X + FONT_20x32_WIDTH - 1;
     ssd1306_set_column_address_boundary(display, column.start, column.end);
-    ssd1306_data(display, (uint8_t*)number_20x32[tens], sizeof(number_20x32[tens]));
+    ssd1306_data(display, (uint8_t*)numbers_32px[tens], sizeof(numbers_32px[tens]));
 
     /* Draw unit digit */
 
     column.start = FONT_SECONDS_X + FONT_20x32_WIDTH + FONT_OFFSET;
     column.end = FONT_SECONDS_X + FONT_20x32_WIDTH + FONT_OFFSET + FONT_20x32_WIDTH - 1;
     ssd1306_set_column_address_boundary(display, column.start, column.end);
-    ssd1306_data(display, (uint8_t*)number_20x32[unit], sizeof(number_20x32[unit]));
+    ssd1306_data(display, (uint8_t*)numbers_32px[unit], sizeof(numbers_32px[unit]));
 }
 
 void ui_timer_draw_dots(ssd1306_t* display)
