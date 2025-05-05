@@ -20,7 +20,9 @@ void (*p_state_function_array[])(system_t* sys) = {
     [STATE_SET_PAUSE_MIN] = state_function_set_pause_min,
     [STATE_SET_PAUSE_SEC] = state_function_set_pause_sec,
     [STATE_WORK_TIMER] = state_function_work_timer,
-    [STATE_WORK_FINISHED] = state_function_work_finished
+    [STATE_WORK_FINISHED] = state_function_work_finished,
+    [STATE_PAUSE_TIMER] = state_function_pause_timer,
+    [STATE_PAUSE_FINISHED] = state_function_pause_finished
 };
 
 void run_state_machine(system_t* sys)
@@ -279,7 +281,48 @@ void state_function_work_timer(system_t* sys)
 void state_function_work_finished(system_t* sys)
 {
     if (button_is_pressed(sys->button)) {
-        sys->state = STATE_DRAW_HOMEPAGE;
+        timer1_stop_and_reset();
+        sys->state = STATE_PAUSE_TIMER;
+        sys->tick = 0;
+        tim.min = sys->pause_timer.min;
+        tim.sec = sys->pause_timer.sec;
         ssd1306_clear_screen(sys->display);
+        ui_timer_draw_timer(sys->display, tim.min, tim.sec);
+        ui_timer_draw_dots(sys->display);
+        timer1_start();
     }
+}
+
+void state_function_pause_timer(system_t* sys)
+{
+    static uint8_t tk = 0;
+
+    /* Return if one second is not elapsed */
+
+    if (sys->tick % 5 || tk == sys->tick)
+        return;
+
+    /* Update timer minute and second */
+
+    tk = sys->tick;
+
+    tim.sec--;
+    if (tim.sec < 0) {
+        tim.sec = 59;
+        tim.min--;
+    }
+
+    if (tim.min < 0) {
+        sys->state = STATE_DRAW_HOMEPAGE;
+        tk = 0;
+        ssd1306_clear_screen(sys->display);
+        // ui_page_draw_work_finished(sys->display);
+        return;
+    }
+
+    ui_timer_draw_timer(sys->display, tim.min, tim.sec);
+}
+
+void state_function_pause_finished(system_t* sys)
+{
 }
