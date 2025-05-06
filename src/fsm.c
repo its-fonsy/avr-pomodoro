@@ -7,7 +7,11 @@
 #include "ui/pages.h"
 #include "ui/timer.h"
 
+#include <avr/eeprom.h>
+
 timer_t tim;
+timer_t eeprom_work_tim EEMEM;
+timer_t eeprom_pause_tim EEMEM;
 
 void (*p_state_function_array[])(system_t* sys) = {
     [STATE_INIT] = state_function_init,
@@ -34,11 +38,8 @@ void run_state_machine(system_t* sys)
 
 void state_function_init(system_t* sys)
 {
-    sys->work_timer.min = 0;
-    sys->work_timer.sec = 0;
-    sys->pause_timer.min = 0;
-    sys->pause_timer.sec = 0;
-
+    eeprom_read_block(&(sys->work_timer), &(eeprom_work_tim), sizeof(timer_t));
+    eeprom_read_block(&(sys->pause_timer), &(eeprom_pause_tim), sizeof(timer_t));
     sys->tick = 0;
     sys->state = STATE_DRAW_HOMEPAGE;
     sys->selection = SEL_NONE;
@@ -231,6 +232,8 @@ void state_function_set_pause_sec(system_t* sys)
     if (button_is_pressed(sys->button)) {
         sys->state = STATE_DRAW_HOMEPAGE_SELECT_START;
         ui_homepage_draw_pause_sec(sys->display, sys->pause_timer.sec);
+        eeprom_update_block(&(sys->pause_timer), &eeprom_pause_tim, sizeof(timer_t));
+        eeprom_update_block(&(sys->work_timer), &eeprom_work_tim, sizeof(timer_t));
     }
 }
 
