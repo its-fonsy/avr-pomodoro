@@ -1,8 +1,8 @@
-#include "pages.h"
+#include "ui/pages.h"
 
-#include "../ssd1306.h"
-#include "font.h"
-#include "utils.h"
+#include "ssd1306.h"
+#include "ui/font.h"
+#include "ui/utils.h"
 #include <stdint.h>
 
 void ui_page_draw_work_finished(ssd1306_t* display)

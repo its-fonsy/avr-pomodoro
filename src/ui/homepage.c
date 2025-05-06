@@ -1,7 +1,7 @@
-#include "homepage.h"
-#include "../fsm.h"
-#include "font.h"
-#include "utils.h"
+#include "ui/homepage.h"
+#include "fsm.h"
+#include "ui/font.h"
+#include "ui/utils.h"
 
 void ui_homepage_draw(ssd1306_t* display, timer_t work, timer_t pause)
 {

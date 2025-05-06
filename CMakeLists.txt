@@ -29,7 +29,7 @@ project(pomo C CXX ASM)
 
 # Important project paths
 set(BASE_PATH    "${${PROJECT_NAME}_SOURCE_DIR}")
-# set(INC_PATH     "${BASE_PATH}/include")
+set(INC_PATH     "${BASE_PATH}/inc")
 set(SRC_PATH     "${BASE_PATH}/src")
 set(LIB_DIR_PATH "${BASE_PATH}/lib")
 

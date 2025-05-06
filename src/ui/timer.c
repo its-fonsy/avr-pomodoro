@@ -1,5 +1,5 @@
-#include "timer.h"
-#include "font.h"
+#include "ui/timer.h"
+#include "ui/font.h"
 #include <avr/pgmspace.h>
 #include <stdint.h>
 

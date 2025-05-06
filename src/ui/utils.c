@@ -1,4 +1,4 @@
-#include "utils.h"
+#include "ui/utils.h"
 
 #include <avr/io.h>
 #include <avr/pgmspace.h>
@@ -7,8 +7,8 @@
 
 #include <util/delay.h>
 
-#include "../ssd1306.h"
-#include "font.h"
+#include "ssd1306.h"
+#include "ui/font.h"
 
 #define UI_UTIL_PACKET_MAX_SIZE 96
 
