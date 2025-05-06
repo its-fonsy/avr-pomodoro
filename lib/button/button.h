@@ -23,6 +23,7 @@ typedef struct {
 
 void button_init(button_t* button);
 void button_update(button_t* button);
+void button_reset(button_t* button);
 uint8_t button_is_pressed(button_t* button);
 
 #endif // __BUTTON_H

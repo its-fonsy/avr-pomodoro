@@ -1,6 +1,17 @@
 #include "homepage.h"
+#include "../fsm.h"
 #include "font.h"
 #include "utils.h"
+
+void ui_homepage_draw(ssd1306_t* display, timer_t work, timer_t pause)
+{
+    ui_homepage_draw_words(display);
+    ui_homepage_draw_work_min(display, work.min);
+    ui_homepage_draw_work_sec(display, work.sec);
+    ui_homepage_draw_timers_dots(display);
+    ui_homepage_draw_pause_min(display, pause.min);
+    ui_homepage_draw_pause_sec(display, pause.sec);
+}
 
 void ui_homepage_draw_words(ssd1306_t* display)
 {

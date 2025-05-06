@@ -26,6 +26,15 @@ void button_update(button_t* button)
     button->lock = BUTTON_UNLOCKED;
 }
 
+void button_reset(button_t* button)
+{
+    while (button->lock == BUTTON_LOCKED) { }
+
+    button->lock = BUTTON_LOCKED;
+    button->status = BUTTON_IDLE;
+    button->lock = BUTTON_UNLOCKED;
+}
+
 uint8_t button_is_pressed(button_t* button)
 {
     uint8_t ret;

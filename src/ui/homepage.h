@@ -1,9 +1,11 @@
 #ifndef __UI_HOMEPAGE_H
 #define __UI_HOMEPAGE_H
 
+#include "../fsm.h"
 #include "../ssd1306.h"
 #include <stdint.h>
 
+void ui_homepage_draw(ssd1306_t* display, timer_t work, timer_t pause);
 void ui_homepage_draw_words(ssd1306_t* display);
 void ui_homepage_draw_work_min(ssd1306_t* display, uint8_t min);
 void ui_homepage_draw_work_sec(ssd1306_t* display, uint8_t sec);

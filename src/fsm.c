@@ -47,16 +47,7 @@ void state_function_init(system_t* sys)
 void state_function_draw_homepage(system_t* sys)
 {
     sys->state = STATE_DRAW_HOMEPAGE_SELECT_START;
-
-    ui_homepage_draw_words(sys->display);
-
-    ui_homepage_draw_work_min(sys->display, sys->work_timer.min);
-    ui_homepage_draw_work_sec(sys->display, sys->work_timer.sec);
-
-    ui_homepage_draw_timers_dots(sys->display);
-
-    ui_homepage_draw_pause_min(sys->display, sys->pause_timer.min);
-    ui_homepage_draw_pause_sec(sys->display, sys->pause_timer.sec);
+    ui_homepage_draw(sys->display, sys->work_timer, sys->pause_timer);
 }
 
 void state_function_homepage_idle(system_t* sys)
@@ -73,15 +64,8 @@ void state_function_homepage_idle(system_t* sys)
     if (button_is_pressed(sys->button)) {
         switch (sys->selection) {
         case SEL_HOMEPAGE_START:
-            timer1_stop_and_reset();
             sys->state = STATE_WORK_TIMER;
-            sys->tick = 0;
-            tim.min = sys->work_timer.min;
-            tim.sec = sys->work_timer.sec;
-            ssd1306_clear_screen(sys->display);
-            ui_timer_draw_timer(sys->display, tim.min, tim.sec);
-            ui_timer_draw_dots(sys->display);
-            timer1_start();
+            setup_sys_for_timer_countdown(sys, sys->work_timer);
             break;
         case SEL_HOMEPAGE_SET:
             sys->state = STATE_SET_WORK_MIN;
@@ -272,7 +256,7 @@ void state_function_work_timer(system_t* sys)
     if (tim.min < 0) {
         sys->state = STATE_WORK_FINISHED;
         tk = 0;
-        button_is_pressed(sys->button);
+        button_reset(sys->button);
         ssd1306_clear_screen(sys->display);
         ui_page_draw_work_finished(sys->display);
         return;
@@ -319,6 +303,7 @@ void state_function_pause_timer(system_t* sys)
         sys->state = STATE_PAUSE_FINISHED_SEL_RESTART;
         tk = 0;
         ssd1306_clear_screen(sys->display);
+        button_reset(sys->button);
         ui_page_draw_pause_finished(sys->display);
         return;
     }
@@ -341,27 +326,12 @@ void state_function_pause_finished_idle(system_t* sys)
         switch (sys->selection) {
         case SEL_PAUSE_FINISHED_SET_TIMER:
             sys->state = STATE_SET_WORK_MIN;
-
-            /* Draw homepage */
             ssd1306_clear_screen(sys->display);
-            ui_homepage_draw_words(sys->display);
-            ui_homepage_draw_work_min(sys->display, sys->work_timer.min);
-            ui_homepage_draw_work_sec(sys->display, sys->work_timer.sec);
-            ui_homepage_draw_timers_dots(sys->display);
-            ui_homepage_draw_pause_min(sys->display, sys->pause_timer.min);
-            ui_homepage_draw_pause_sec(sys->display, sys->pause_timer.sec);
-
+            ui_homepage_draw(sys->display, sys->work_timer, sys->pause_timer);
             break;
-        case SEL_PAUSE_FINISHED_RESTART:
-            timer1_stop_and_reset();
+        case SEL_PAUSE_FINISHED_REPEAT:
             sys->state = STATE_WORK_TIMER;
-            sys->tick = 0;
-            tim.min = sys->work_timer.min;
-            tim.sec = sys->work_timer.sec;
-            ssd1306_clear_screen(sys->display);
-            ui_timer_draw_timer(sys->display, tim.min, tim.sec);
-            ui_timer_draw_dots(sys->display);
-            timer1_start();
+            setup_sys_for_timer_countdown(sys, sys->work_timer);
             break;
         default:
             sys->state = STATE_DRAW_HOMEPAGE;
@@ -376,7 +346,7 @@ void state_function_pause_finished_sel_restart(system_t* sys)
     ui_page_clear_right_selectors(sys->display);
     ui_page_draw_left_selectors(sys->display);
     sys->state = STATE_PAUSE_FINISHED_IDLE;
-    sys->selection = SEL_PAUSE_FINISHED_RESTART;
+    sys->selection = SEL_PAUSE_FINISHED_REPEAT;
 }
 
 void state_function_pause_finished_sel_set_timer(system_t* sys)
@@ -385,4 +355,15 @@ void state_function_pause_finished_sel_set_timer(system_t* sys)
     ui_page_draw_right_selectors(sys->display);
     sys->state = STATE_PAUSE_FINISHED_IDLE;
     sys->selection = SEL_PAUSE_FINISHED_SET_TIMER;
+}
+
+void setup_sys_for_timer_countdown(system_t* sys, timer_t timer)
+{
+    timer1_stop_and_reset();
+    sys->tick = 0;
+    tim = timer;
+    ssd1306_clear_screen(sys->display);
+    ui_timer_draw_timer(sys->display, tim.min, tim.sec);
+    ui_timer_draw_dots(sys->display);
+    timer1_start();
 }

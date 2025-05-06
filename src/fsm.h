@@ -29,7 +29,7 @@ typedef enum {
     SEL_NONE = 0,
     SEL_HOMEPAGE_START,
     SEL_HOMEPAGE_SET,
-    SEL_PAUSE_FINISHED_RESTART,
+    SEL_PAUSE_FINISHED_REPEAT,
     SEL_PAUSE_FINISHED_SET_TIMER,
 } selection_t;
 
@@ -69,5 +69,6 @@ void state_function_pause_finished_sel_restart(system_t* sys);
 void state_function_pause_finished_sel_set_timer(system_t* sys);
 
 void run_state_machine(system_t* sys);
+void setup_sys_for_timer_countdown(system_t* sys, timer_t timer);
 
 #endif /* __FSM_H */
